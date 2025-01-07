@@ -12,6 +12,7 @@ enum ContextType
 class IConfigContext
 {
 	private:
+		unsigned int	level_;
 
 	public:
 		virtual ~IConfigContext();
