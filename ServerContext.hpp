@@ -2,17 +2,19 @@
 
 # include "IConfigContext.hpp"
 
-enum HttpDirectives
+enum ServerDirectives
 {
+	LISTEN,
+	SERVER_NAME,
 };
 
-class HttpContext : public IConfigContext
+class ServerContext : public IConfigContext
 {
 	private:
-		ContextType type_ = HTTP;
+		ContextType type_ = SERVER;
 
 	public:
-		HttpContext(IConfigContext *parent);
+		ServerContext(IConfigContext *parent);
 		ContextType getType() const;
 		void PrintType(std::ostream &os) const;
 		bool IsValid() const;

@@ -1,7 +1,9 @@
 #include "MainContext.hpp"
 
-MainContext::MainContext(unsigned int worker_processes) : worker_processes_(worker_processes)
-{}
+MainContext::MainContext(unsigned int worker_processes) : IConfigContext(NULL)
+{
+	
+}
 
 ContextType MainContext::GetType() const
 {
@@ -15,6 +17,5 @@ void MainContext::PrintType(std::ostream &os) const
 
 bool MainContext::IsValid() const
 {
-	if (worker_processes_ < 0)
-		throw ; // exception
+	return (true);
 }

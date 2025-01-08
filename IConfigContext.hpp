@@ -1,6 +1,8 @@
 #pragma once
 
 # include <iostream>
+# include <vector>
+# include <unordered_map>
 
 enum ContextType
 {
@@ -11,12 +13,22 @@ enum ContextType
 
 class IConfigContext
 {
-	private:
-		unsigned int	level_;
+	protected:
+		IConfigContext *parent_;
+		std::vector<IConfigContext *> child_;
+		std::unordered_map<std::string, std::string> directives_;
 
 	public:
-		virtual ~IConfigContext();
-		virtual ContextType GetType() const = 0;
+		IConfigContext(IConfigContext *parent);
+		~IConfigContext();
+		virtual ContextType getType() const = 0;
 		virtual void PrintType(std::ostream &os) const;
 		virtual bool IsValid() const;
+		
+		void	AddChild(IConfigContext *child);
+		IConfigContext* getParent() const;
+		std::vector<IConfigContext *> getChild() const;
+
+		void	AddDirectives(std::string key, std::string value);
+		std::unordered_map<std::string, std::string> getDirectives() const;
 };
