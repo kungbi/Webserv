@@ -8,6 +8,7 @@ std::string ConfigReader::ReadFile(std::string filepath)
 				std::istreambuf_iterator<char>());
 	}
 	catch (...) {
-		std::cerr << "Cannot open " << filepath << std::endl;	
+		std::cerr << "Cannot open " << filepath << std::endl;
+		return ("");
 	}
 }

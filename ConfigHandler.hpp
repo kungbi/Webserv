@@ -15,5 +15,8 @@ class ConfigHandler
 		ConfigReader reader_;
 		ConfigData data_;
 		ConfigParser parser_;
+
 	public:
+		ConfigHandler();
+		ConfigHandler(std::string law_data);
 };

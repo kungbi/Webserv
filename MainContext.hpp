@@ -7,6 +7,11 @@ enum MainDirectives
 	WORKER_PROCESSES,
 };
 
+enum 
+{
+	
+}
+
 class MainContext : public IConfigContext
 {
 	private:

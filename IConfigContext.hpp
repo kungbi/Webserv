@@ -11,12 +11,14 @@ enum ContextType
 	SERVER,
 };
 
+template <typename DirectiveType>
 class IConfigContext
 {
-	protected:
+	private:
+		ContextType	type_;
 		IConfigContext *parent_;
 		std::vector<IConfigContext *> child_;
-		std::unordered_map<std::string, std::string> directives_;
+		std::unordered_map<DirectiveType, std::vector<std::string> > directives_;
 
 	public:
 		IConfigContext(IConfigContext *parent);
