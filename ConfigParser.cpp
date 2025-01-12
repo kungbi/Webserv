@@ -11,13 +11,33 @@ void ConfigParser::Tokenize(std::string config_data)
 	}
 }
 
-template <typename DirectiveType>
-IConfigContext<DirectiveType>* ConfigParser::Parser(std::vector<std::string> tokens)
+IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens)
 {
-	size_t	i = 0;
+	IConfigContext *MainContext = new IConfigContext(NULL, MAIN);
+	
+	size_t i = 0;
+	
+	//이거 어떻게 할지 생각해 봐야 할듯?
 
 	while (i < tokens.size())
 	{
-		if (tokens[i])
+		if (IsContext(tokens[i]))
+		{
+			
+		}
 	}
+
+	return (MainContext);
+}
+
+bool IsContext(std::string token)
+{
+	std::vector<std::string> ContextStrings = {"main", "http", "server", "events", "location"};
+
+	for (size_t i = 0; i < ContextStrings.size(); ++i)
+	{
+		if (token == ContextStrings[i])
+			return (true);
+	}
+	return (false);
 }

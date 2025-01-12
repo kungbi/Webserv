@@ -2,35 +2,59 @@
 
 # include <iostream>
 # include <vector>
-# include <unordered_map>
+# include <map>
 
 enum ContextType
 {
 	MAIN,
 	HTTP,
 	SERVER,
+	EVENTS,
+	LOCATION,
+	CONTEXT_END
 };
 
-template <typename DirectiveType>
+enum MainDirectives
+{
+	WORKER_PROCESSES,
+	ERROR_LOG,
+	PID,
+	USER,
+};
+
+enum HttpDirectives
+{};
+
+enum ServerDirectives
+{};
+
+enum EventsDirectives
+{};
+
+enum LocationDirectives
+{};
+
 class IConfigContext
 {
 	private:
-		ContextType	type_;
+		int	type_;
 		IConfigContext *parent_;
 		std::vector<IConfigContext *> child_;
-		std::unordered_map<DirectiveType, std::vector<std::string> > directives_;
+		std::map<std::string, std::vector<std::string> > directives_;
 
 	public:
-		IConfigContext(IConfigContext *parent);
+		IConfigContext(IConfigContext *parent, int type);
 		~IConfigContext();
-		virtual ContextType getType() const = 0;
-		virtual void PrintType(std::ostream &os) const;
-		virtual bool IsValid() const;
+		ContextType getType() const;
+		void PrintType(std::ostream &os) const;
+		bool IsValid() const;
 		
 		void	AddChild(IConfigContext *child);
 		IConfigContext* getParent() const;
 		std::vector<IConfigContext *> getChild() const;
 
 		void	AddDirectives(std::string key, std::string value);
-		std::unordered_map<std::string, std::string> getDirectives() const;
+		std::map<std::string, std::vector<std::string> > getDirectives() const;
 };
+
+bool IsContext(std::string token);

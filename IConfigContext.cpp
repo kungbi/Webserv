@@ -1,6 +1,6 @@
 #include "IConfigContext.hpp"
 
-IConfigContext::IConfigContext(IConfigContext *parent) : parent_(parent)
+IConfigContext::IConfigContext(IConfigContext *parent, int type) : parent_(parent), type_(type)
 {
 	if (parent)
 	{
@@ -31,10 +31,10 @@ std::vector<IConfigContext *> IConfigContext::getChild() const
 
 void IConfigContext::AddDirectives(std::string key, std::string value)
 {
-	directives_.insert(std::make_pair(key, value));
+	directives_[key].push_back(value);
 }
 
-std::unordered_map<std::string, std::string> IConfigContext::getDirectives() const
+std::map<std::string, std::vector<std::string> > IConfigContext::getDirectives() const
 {
 	return (directives_);
 }

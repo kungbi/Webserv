@@ -12,8 +12,5 @@ class ConfigParser
 	
 	public:
 		void Tokenize(std::string config_data);
-		template <typename DirectiveType>
-		IConfigContext<DirectiveType> *ConfigParser::Parser(std::vector<std::string> tokens);
+		IConfigContext *ConfigParser::Parser(std::vector<std::string> tokens);
 };
-
-bool FindDirectives
