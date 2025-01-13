@@ -3,6 +3,7 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include <stdexcept>
 
 enum ContextType
 {
@@ -57,4 +58,5 @@ class IConfigContext
 		std::map<std::string, std::vector<std::string> > getDirectives() const;
 };
 
-bool IsContext(std::string token);
+int IsContext(std::string token);
+bool IsDirective(std::string token);

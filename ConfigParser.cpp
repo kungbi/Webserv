@@ -11,33 +11,103 @@ void ConfigParser::Tokenize(std::string config_data)
 	}
 }
 
-IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens)
+IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigContext *parent)
 {
-	IConfigContext *MainContext = new IConfigContext(NULL, MAIN);
-	
-	size_t i = 0;
-	
-	//이거 어떻게 할지 생각해 봐야 할듯?
+	std::vector<std::string>::iterator it = tokens.begin();
+	std::vector<std::string>::iterator last = tokens.end();
+	--last;
 
-	while (i < tokens.size())
+	while (it != tokens.end())
 	{
-		if (IsContext(tokens[i]))
+		int context_type = IsContext(*it);
+		if (context_type > 0)
 		{
-			
-		}
-	}
+			if (*it == *last)
+				throw (ConfigParser::ConfigSyntaxError(NULL));
+			if (*(++it) != "{")
+				throw (ConfigParser::ConfigSyntaxError(NULL));
 
-	return (MainContext);
+			std::vector<std::string> sub_tokens;
+			int	bracket_count = 1;
+			IConfigContext *node = new IConfigContext(parent, context_type);
+
+			++it;
+			while (it != tokens.end() && bracket_count > 0)
+			{
+				if (*it == "{")
+					bracket_count++;
+				if (*it == "}")
+					bracket_count--;
+				sub_tokens.push_back(*it);
+				++it;
+			}
+			if (bracket_count == 0)
+				Parser(sub_tokens, node);
+			if (bracket_count > 0)
+				throw (ConfigParser::ConfigSyntaxError(node));
+		}
+		else if (IsDirective(*it))
+		{
+			if (*it == *last)
+				throw (ConfigParser::ConfigSyntaxError(NULL));
+
+			std::string directive_key = *it;
+			++it;
+			std::string::iterator str_it_end = (*it).end();
+			str_it_end--;
+			while (*it != ";" && *str_it_end != ';')
+			{
+				str_it_end = (*it).end();
+				str_it_end--;
+				parent->AddDirectives(directive_key, *it);
+				++it;
+			}
+			if ((*it).size() != 1 && *str_it_end == ';')
+			{
+				std::string value = (*it).substr(0, (*it).size() - 2);
+				parent->AddDirectives(directive_key, value);
+			}
+		}
+		else
+			throw (ConfigParser::ConfigSyntaxError(NULL));
+		++it;
+	}
+	return (parent);
 }
 
-bool IsContext(std::string token)
+int IsContext(std::string token)
 {
 	std::vector<std::string> ContextStrings = {"main", "http", "server", "events", "location"};
 
 	for (size_t i = 0; i < ContextStrings.size(); ++i)
 	{
 		if (token == ContextStrings[i])
+			return (static_cast<int>(i));
+	}
+	return (-1);
+}
+
+bool IsDirective(std::string token)
+{
+	std::vector<std::string> DirectiveStrings = \
+	{"worker_processes", "worker_connections", "listen", "server_name", "root", \
+	"index", "error_page", "access_log"};
+
+	for (size_t i = 0; i < DirectiveStrings.size(); ++i)
+	{
+		if (token == DirectiveStrings[i])
 			return (true);
 	}
 	return (false);
+}
+
+const char* ConfigParser::ConfigSyntaxError::what() const throw()
+{
+	return ("Error: Config file has syntax error");
+}
+
+ConfigParser::ConfigSyntaxError::ConfigSyntaxError(IConfigContext *node)
+{
+	if (node != NULL)
+		delete (node);
 }

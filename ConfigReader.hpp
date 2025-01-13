@@ -6,7 +6,10 @@
 class ConfigReader
 {
 	private:
-		// 기본경로 설정하기?
+		std::string default_conf_path;
+
 	public:
+		ConfigReader();
 		std::string ReadFile(std::string filepath);
+		std::string GetDefaultPath();
 };

@@ -2,13 +2,31 @@
 
 std::string ConfigReader::ReadFile(std::string filepath)
 {
-	try {
-		std::ifstream config_file(filepath);
-		return std::string((std::istreambuf_iterator<char>(config_file)), \
-				std::istreambuf_iterator<char>());
-	}
-	catch (...) {
-		std::cerr << "Cannot open " << filepath << std::endl;
-		return ("");
-	}
+    std::ifstream config_file(filepath);
+
+    if (!config_file.is_open())
+	{
+        std::cerr << "Cannot open " << filepath << std::endl;
+        return ("");
+    }
+    std::string content((std::istreambuf_iterator<char>(config_file)),
+                        std::istreambuf_iterator<char>());
+
+    if (content.empty())
+	{
+        std::cerr << "File is empty: " << filepath << std::endl;
+        return ("");
+    }
+    return (content);
+}
+
+ConfigReader::ConfigReader()
+{
+	default_conf_path = "./default.conf";
+	// 없어도 되나?
+}
+
+std::string ConfigReader::GetDefaultPath()
+{
+	return (default_conf_path);
 }
