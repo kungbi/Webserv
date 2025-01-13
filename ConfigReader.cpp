@@ -2,7 +2,7 @@
 
 std::string ConfigReader::ReadFile(std::string filepath)
 {
-    std::ifstream config_file(filepath);
+    std::ifstream config_file(filepath.c_str());
 
     if (!config_file.is_open())
 	{

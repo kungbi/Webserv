@@ -11,6 +11,11 @@ void ConfigParser::Tokenize(std::string config_data)
 	}
 }
 
+std::vector<std::string> ConfigParser::GetTokens()
+{
+	return (tokens_);
+}
+
 IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigContext *parent)
 {
 	std::vector<std::string>::iterator it = tokens.begin();
@@ -22,6 +27,7 @@ IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigCon
 		int context_type = IsContext(*it);
 		if (context_type > 0)
 		{
+			std::cout << "Token : " << *it << std::endl;
 			if (*it == *last)
 				throw (ConfigParser::ConfigSyntaxError(NULL));
 			if (*(++it) != "{")
@@ -48,6 +54,7 @@ IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigCon
 		}
 		else if (IsDirective(*it))
 		{
+			std::cout << "direc : " << *it << std::endl;
 			if (*it == *last)
 				throw (ConfigParser::ConfigSyntaxError(NULL));
 
@@ -67,9 +74,12 @@ IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigCon
 				std::string value = (*it).substr(0, (*it).size() - 2);
 				parent->AddDirectives(directive_key, value);
 			}
+			std::cout << "token ? : " << *it << std::endl;
 		}
 		else
+		{
 			throw (ConfigParser::ConfigSyntaxError(NULL));
+		}
 		++it;
 	}
 	return (parent);
@@ -77,7 +87,12 @@ IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigCon
 
 int IsContext(std::string token)
 {
-	std::vector<std::string> ContextStrings = {"main", "http", "server", "events", "location"};
+	std::vector<std::string> ContextStrings;
+	ContextStrings.push_back("main");
+	ContextStrings.push_back("http");
+	ContextStrings.push_back("server");
+	ContextStrings.push_back("events");
+	ContextStrings.push_back("location");
 
 	for (size_t i = 0; i < ContextStrings.size(); ++i)
 	{
@@ -89,9 +104,15 @@ int IsContext(std::string token)
 
 bool IsDirective(std::string token)
 {
-	std::vector<std::string> DirectiveStrings = \
-	{"worker_processes", "worker_connections", "listen", "server_name", "root", \
-	"index", "error_page", "access_log"};
+	std::vector<std::string> DirectiveStrings;
+	DirectiveStrings.push_back("worker_processes");
+	DirectiveStrings.push_back("worker_connections");
+	DirectiveStrings.push_back("listen");
+	DirectiveStrings.push_back("server_name");
+	DirectiveStrings.push_back("root");
+	DirectiveStrings.push_back("index");
+	DirectiveStrings.push_back("error_page");
+	DirectiveStrings.push_back("access_log");
 
 	for (size_t i = 0; i < DirectiveStrings.size(); ++i)
 	{

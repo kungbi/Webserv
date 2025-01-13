@@ -13,7 +13,8 @@ class ConfigParser
 	
 	public:
 		void Tokenize(std::string config_data);
-		IConfigContext *ConfigParser::Parser(std::vector<std::string> tokens, IConfigContext *root);
+		IConfigContext *Parser(std::vector<std::string> tokens, IConfigContext *root);
+		std::vector<std::string> GetTokens();
 
 	class ConfigSyntaxError : public std::exception
 	{

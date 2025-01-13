@@ -49,3 +49,7 @@ bool IConfigContext::IsValid() const
 	return (true);
 }
 
+int IConfigContext::getType() const
+{
+	return (type_);
+}

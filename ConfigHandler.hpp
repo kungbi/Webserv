@@ -1,9 +1,6 @@
 #pragma once
 
 # include "IConfigContext.hpp"
-# include "HttpContext.hpp"
-# include "ServerContext.hpp"
-# include "MainContext.hpp"
 # include "ConfigData.hpp"
 # include "ConfigParser.hpp"
 # include "ConfigReader.hpp"

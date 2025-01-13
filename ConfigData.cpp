@@ -20,6 +20,10 @@ void ConfigData::SearchTree()
 	cur = GetRoot();
 
 	std::vector<IConfigContext *> childs = cur->getChild();
+
+	std::cout << "Type : " << cur->getType() << std::endl;
+	cur = childs[0];
+	std::cout << "Type 2 : " << cur->getType() << std::endl;
 	
 	if (childs.empty())
 		return ;

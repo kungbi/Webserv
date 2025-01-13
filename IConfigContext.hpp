@@ -38,15 +38,15 @@ enum LocationDirectives
 class IConfigContext
 {
 	private:
-		int	type_;
 		IConfigContext *parent_;
+		int	type_;
 		std::vector<IConfigContext *> child_;
 		std::map<std::string, std::vector<std::string> > directives_;
 
 	public:
 		IConfigContext(IConfigContext *parent, int type);
 		~IConfigContext();
-		ContextType getType() const;
+		int getType() const;
 		void PrintType(std::ostream &os) const;
 		bool IsValid() const;
 		
