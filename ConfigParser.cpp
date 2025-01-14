@@ -11,78 +11,70 @@ void ConfigParser::Tokenize(std::string config_data)
 	}
 }
 
-std::vector<std::string> ConfigParser::GetTokens()
-{
-	return (tokens_);
-}
-
 IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigContext *parent)
 {
+	IConfigContext *root = new IConfigContext(NULL, MAIN);
+
+	try {
+		ParserRecursive(tokens_, root);
+	} catch (std::exception &e) {
+		std::cout << "Error: Parsing error" << std::endl;
+		return (NULL);
+	}
+	return (root);
+}
+
+void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigContext *parent)
+{
 	std::vector<std::string>::iterator it = tokens.begin();
-	std::vector<std::string>::iterator last = tokens.end();
-	--last;
+	std::vector<std::string>::iterator last_it = tokens.end();
+	last_it--;
 
 	while (it != tokens.end())
 	{
-		int context_type = IsContext(*it);
-		if (context_type > 0)
+		int ContextType = IsContext(*it);
+
+		if (ContextType > 0)
 		{
-			std::cout << "Token : " << *it << std::endl;
-			if (*it == *last)
-				throw (ConfigParser::ConfigSyntaxError(NULL));
+			if (it == last_it)
+				throw (ConfigParser::ConfigSyntaxError());
+
+			int bracket_count = 0;
+			std::vector<std::string> subTokens;
+			IConfigContext *node = new IConfigContext(parent, ContextType);
+
 			if (*(++it) != "{")
-				throw (ConfigParser::ConfigSyntaxError(NULL));
-
-			std::vector<std::string> sub_tokens;
-			int	bracket_count = 1;
-			IConfigContext *node = new IConfigContext(parent, context_type);
-
+				throw	(ConfigParser::ConfigSyntaxError());
+			bracket_count++;
 			++it;
 			while (it != tokens.end() && bracket_count > 0)
 			{
+				subTokens.push_back(*it);
 				if (*it == "{")
 					bracket_count++;
 				if (*it == "}")
 					bracket_count--;
-				sub_tokens.push_back(*it);
 				++it;
 			}
-			if (bracket_count == 0)
-				Parser(sub_tokens, node);
-			if (bracket_count > 0)
-				throw (ConfigParser::ConfigSyntaxError(node));
+			try {
+				ParserRecursive(subTokens, node);
+			} catch (std::exception &e) {
+				std::cerr << e.what() << std::endl;
+				return ;
+			}
+			if (it == tokens.end())
+				return ;
 		}
 		else if (IsDirective(*it))
 		{
-			std::cout << "direc : " << *it << std::endl;
-			if (*it == *last)
-				throw (ConfigParser::ConfigSyntaxError(NULL));
-
-			std::string directive_key = *it;
-			++it;
-			std::string::iterator str_it_end = (*it).end();
-			str_it_end--;
-			while (*it != ";" && *str_it_end != ';')
-			{
-				str_it_end = (*it).end();
-				str_it_end--;
-				parent->AddDirectives(directive_key, *it);
-				++it;
-			}
-			if ((*it).size() != 1 && *str_it_end == ';')
-			{
-				std::string value = (*it).substr(0, (*it).size() - 2);
-				parent->AddDirectives(directive_key, value);
-			}
-			std::cout << "token ? : " << *it << std::endl;
+			if (it == last_it)
+				throw (ConfigParser::ConfigSyntaxError());
 		}
-		else
-		{
-			throw (ConfigParser::ConfigSyntaxError(NULL));
+		else {
+			throw (ConfigParser::ConfigSyntaxError());
 		}
 		++it;
 	}
-	return (parent);
 }
 
 int IsContext(std::string token)
@@ -125,10 +117,4 @@ bool IsDirective(std::string token)
 const char* ConfigParser::ConfigSyntaxError::what() const throw()
 {
 	return ("Error: Config file has syntax error");
-}
-
-ConfigParser::ConfigSyntaxError::ConfigSyntaxError(IConfigContext *node)
-{
-	if (node != NULL)
-		delete (node);
 }

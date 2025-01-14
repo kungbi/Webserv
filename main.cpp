@@ -9,10 +9,22 @@ int main()
 
 	parser.Tokenize(reader.ReadFile("nginx.conf"));
 	IConfigContext *root = new IConfigContext(NULL, MAIN);
-	parser.Parser(parser.GetTokens(), root);
+	try {
+		parser.Parser(parser.GetTokens(), root);
+	} catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+		exit(1);
+	}
 
 	ConfigData data(root);
 
-	data.SearchTree();
+	try {
+		data.SearchTree();
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 	return (0);
 }

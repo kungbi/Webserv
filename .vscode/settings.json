@@ -67,6 +67,9 @@
 		"memory_resource": "cpp",
 		"numeric": "cpp",
 		"random": "cpp",
-		"fstream": "cpp"
+		"fstream": "cpp",
+		"__tree": "cpp",
+		"iomanip": "cpp",
+		"stack": "cpp"
 	}
 }
