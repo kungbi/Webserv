@@ -1,5 +1,13 @@
 #include "ConfigParser.hpp"
 
+void ConfigParser::ParserInit(std::vector<std::string> tokens)
+{
+	if (tokens.empty())
+		return ;
+	tokens.push_back("}");
+	tokens.insert("{", tokens.begin());
+}
+
 void ConfigParser::Tokenize(std::string config_data)
 {
 	std::stringstream ss(config_data);
