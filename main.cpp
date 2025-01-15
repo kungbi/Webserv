@@ -9,8 +9,10 @@ int main()
 
 	parser.Tokenize(reader.ReadFile("nginx.conf"));
 	IConfigContext *root = parser.Parser();
-	if (root == NULL)
+	if (root == NULL) {
 		std::cerr << "Parsing Error!" << std::endl;
+		return (0);
+	}
 
 	ConfigData data(root);
 

@@ -70,3 +70,14 @@ void ConfigData::SearchTree()
 		std::cout << "No childs" << std::endl;
 	return ;
 }	
+
+void ConfigData::SearchTreetest(IConfigContext *root)
+{
+	IConfigContext *cur = root_;
+	std::vector<IConfigContext *> childs = cur->getChild();
+
+	while (!childs.empty())
+	{
+		
+	}
+}

@@ -78,14 +78,14 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 			//*it = 지시어 토큰
 			if (it == last_it)
 				throw (ConfigParser::ConfigSyntaxError());
-			std::string::iterator TokenIterEnd = it->end();
+
 			std::string Directive = *it;
-			--TokenIterEnd;
 			++it;
 
 			while (it != tokens.end() && *it != ";")
 			{
-				TokenIterEnd = it->end();
+				std::string::iterator TokenIterEnd = it->end();
+
 				--TokenIterEnd;
 				if (*TokenIterEnd == ';') {
 					parent->AddDirectives(Directive, it->substr(0, it->size() - 1));
@@ -96,7 +96,6 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 			}
 		}
 		else {
-			std::cout << "maybe here : " << *it << std::endl;
 			throw (ConfigParser::ConfigSyntaxError());
 		}
 		++it;

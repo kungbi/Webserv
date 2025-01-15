@@ -6,7 +6,7 @@ std::string ConfigReader::ReadFile(std::string filepath)
 
     if (!config_file.is_open())
 	{
-        std::cerr << "Cannot open " << filepath << std::endl;
+        std::cerr << "Cannot open : " << filepath << std::endl;
         return ("");
     }
     std::string content((std::istreambuf_iterator<char>(config_file)),
@@ -14,7 +14,7 @@ std::string ConfigReader::ReadFile(std::string filepath)
 
     if (content.empty())
 	{
-        std::cerr << "File is empty: " << filepath << std::endl;
+        std::cerr << "File is empty : " << filepath << std::endl;
         return ("");
     }
     return (content);
