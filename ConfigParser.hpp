@@ -11,11 +11,10 @@ class ConfigParser
 	private:
 		std::vector<std::string> tokens_;
 		void	ParserRecursive(std::vector<std::string> tokens, IConfigContext *parent);
-		void	ParserInit(std::vector<std::string> tokens);
 
 	public:
 		void Tokenize(std::string config_data);
-		IConfigContext *Parser(std::vector<std::string> tokens, IConfigContext *root);
+		IConfigContext *Parser();
 
 	class ConfigSyntaxError : public std::exception
 	{

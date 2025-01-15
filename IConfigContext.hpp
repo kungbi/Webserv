@@ -43,6 +43,7 @@ class IConfigContext
 		std::vector<IConfigContext *> child_;
 		std::map<std::string, std::vector<std::string> > directives_;
 
+		void	AddChild(IConfigContext *child);
 	public:
 		IConfigContext(IConfigContext *parent, int type);
 		~IConfigContext();
@@ -50,7 +51,6 @@ class IConfigContext
 		void PrintType(std::ostream &os) const;
 		bool IsValid() const;
 		
-		void	AddChild(IConfigContext *child);
 		IConfigContext* getParent() const;
 		std::vector<IConfigContext *> getChild() const;
 

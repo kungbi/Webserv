@@ -1,13 +1,5 @@
 #include "ConfigParser.hpp"
 
-void ConfigParser::ParserInit(std::vector<std::string> tokens)
-{
-	if (tokens.empty())
-		return ;
-	tokens.push_back("}");
-	tokens.insert("{", tokens.begin());
-}
-
 void ConfigParser::Tokenize(std::string config_data)
 {
 	std::stringstream ss(config_data);
@@ -19,14 +11,15 @@ void ConfigParser::Tokenize(std::string config_data)
 	}
 }
 
-IConfigContext* ConfigParser::Parser(std::vector<std::string> tokens, IConfigContext *parent)
+IConfigContext* ConfigParser::Parser()
 {
 	IConfigContext *root = new IConfigContext(NULL, MAIN);
 
 	try {
 		ParserRecursive(tokens_, root);
 	} catch (std::exception &e) {
-		std::cout << "Error: Parsing error" << std::endl;
+		std::cerr << e.what() << std::endl;
+		//delete tree(root)
 		return (NULL);
 	}
 	return (root);
@@ -36,49 +29,74 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 {
 	std::vector<std::string>::iterator it = tokens.begin();
 	std::vector<std::string>::iterator last_it = tokens.end();
-	last_it--;
 
+	last_it--;
+	if (it == last_it) {
+		throw (ConfigParser::ConfigSyntaxError());
+	}
 	while (it != tokens.end())
 	{
 		int ContextType = IsContext(*it);
-
 		if (ContextType > 0)
 		{
-			if (it == last_it)
+			if (*(++it) != "{") {
 				throw (ConfigParser::ConfigSyntaxError());
+			}
 
-			int bracket_count = 0;
-			std::vector<std::string> subTokens;
-			IConfigContext *node = new IConfigContext(parent, ContextType);
+			if (it == last_it) {
+				throw (ConfigParser::ConfigSyntaxError());
+			}
 
-			if (*(++it) != "{")
-				throw	(ConfigParser::ConfigSyntaxError());
-			bracket_count++;
-			++it;
-			while (it != tokens.end() && bracket_count > 0)
+			int BracketCount = 1;
+			std::vector<std::string> SubTokens;
+			IConfigContext* node = new IConfigContext(parent, ContextType);
+			
+			while (it != tokens.end())
 			{
-				subTokens.push_back(*it);
-				if (*it == "{")
-					bracket_count++;
-				if (*it == "}")
-					bracket_count--;
 				++it;
+				if (it == tokens.end())
+					throw (ConfigParser::ConfigSyntaxError());
+				if (*it == "{")
+					BracketCount++;
+				if (*it == "}")
+					BracketCount--;
+				if (BracketCount == 0)
+					break ;
+				SubTokens.push_back(*it);
 			}
+			//*it = }
+			if (BracketCount != 0)
+				throw (ConfigParser::ConfigSyntaxError());
 			try {
-				ParserRecursive(subTokens, node);
-			} catch (std::exception &e) {
-				std::cerr << e.what() << std::endl;
-				return ;
+				ParserRecursive(SubTokens, node);
+			} catch (...) {
+				throw (ConfigParser::ConfigSyntaxError());
 			}
-			if (it == tokens.end())
-				return ;
 		}
 		else if (IsDirective(*it))
 		{
+			//*it = 지시어 토큰
 			if (it == last_it)
 				throw (ConfigParser::ConfigSyntaxError());
+			std::string::iterator TokenIterEnd = it->end();
+			std::string Directive = *it;
+			--TokenIterEnd;
+			++it;
+
+			while (it != tokens.end() && *it != ";")
+			{
+				TokenIterEnd = it->end();
+				--TokenIterEnd;
+				if (*TokenIterEnd == ';') {
+					parent->AddDirectives(Directive, it->substr(0, it->size() - 1));
+					break ;
+				}
+				parent->AddDirectives(Directive, *it);
+				++it;
+			}
 		}
 		else {
+			std::cout << "maybe here : " << *it << std::endl;
 			throw (ConfigParser::ConfigSyntaxError());
 		}
 		++it;
