@@ -2,70 +2,100 @@
 
 void Webserver::initializeServers(const std::string& configFile) {
 	configFile.c_str();
+	// 서버 설정파일을 읽어서 설정 객체 가져오기.
 
-    // 예제 서버 설정
-    std::map<std::string, std::string> server1Config;
-    server1Config.insert(std::make_pair("ip", "127.0.0.1"));
-    server1Config.insert(std::make_pair("port", "8080"));
+	// 예제 서버 설정
+	std::map<std::string, std::string> server1Config;
+	server1Config.insert(std::make_pair("ip", "127.0.0.1"));
+	server1Config.insert(std::make_pair("port", "8080"));
 
-    std::map<std::string, std::string> server2Config;
-    server2Config.insert(std::make_pair("ip", "127.0.0.1"));
-    server2Config.insert(std::make_pair("port", "9090"));
+	std::map<std::string, std::string> server2Config;
+	server2Config.insert(std::make_pair("ip", "127.0.0.1"));
+	server2Config.insert(std::make_pair("port", "9090"));
 
-    servers.addServer(server1Config);
-    servers.addServer(server2Config);
+	Server* server1 = servers.createServer(server1Config);
+	Server* server2 = servers.createServer(server2Config);
+
+	kqueueManager.addFd(server1->getSocketFd(), EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
+	kqueueManager.addFd(server2->getSocketFd(), EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
+
+	servers.addServer(*server1);
+	servers.addServer(*server2);
 }
 
 void Webserver::registerFd(int clientFd) {
-    kqueueManager.addFd(clientFd, EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
-    std::cout << "Client FD: " << clientFd << " registered with Kqueue." << std::endl;
+	kqueueManager.addFd(clientFd, EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
+	std::cout << "Client FD: " << clientFd << " registered with Kqueue." << std::endl;
 }
 
 void Webserver::handleServerSocketEvent(int fd) {
-    Server* server = servers.getServerForSocketFd(fd);
-    if (server) {
-        int clientFd = server->acceptClient(); // 클라이언트 FD 반환
-        if (clientFd != -1) {
-            registerFd(clientFd); // 클라이언트 FD를 Kqueue에 등록
-        } else {
-            std::cerr << "Failed to accept client on FD: " << fd << std::endl;
-        }
-    } else {
-        std::cerr << "No server found for server socket FD: " << fd << std::endl;
-    }
+	Server* server = servers.getServerForSocketFd(fd);
+	if (server) {
+		int clientFd = server->acceptClient(); // 클라이언트 FD 반환
+		if (clientFd != -1) {
+			registerFd(clientFd); // 클라이언트 FD를 Kqueue에 등록
+		} else {
+			std::cerr << "Failed to accept client on FD: " << fd << std::endl;
+		}
+	} else {
+		std::cerr << "No server found for server socket FD: " << fd << std::endl;
+	}
 }
 
 void Webserver::handleClientRequest(int fd) {
-    servers.handleRequest(fd); // 서버를 통해 요청 처리
+	servers.handleRequest(fd);
+	
+	kqueueManager.removeFd(fd, EVFILT_READ);
+	close(fd);
+	std::cout << "Connection closed for FD: " << fd << std::endl;
 }
 
 void Webserver::processEvents(const std::vector<std::pair<int, int> >& events) {
-    for (std::vector<std::pair<int, int> >::const_iterator it = events.begin(); it != events.end(); ++it) {
-        int fd = it->first;
-        int filter = it->second;
-        if (filter == EVFILT_READ) {
-            processReadEvent(fd); // READ 이벤트 처리
-        }
-    }
+	for (std::vector<std::pair<int, int> >::const_iterator it = events.begin(); it != events.end(); ++it) {
+		int fd = it->first;
+		int filter = it->second;
+		if (filter == EVFILT_READ) {
+			processReadEvent(fd); // READ 이벤트 처리
+		}
+	}
 }
 
 void Webserver::processReadEvent(int fd) {
-    if (servers.isServerSocketFd(fd)) {
-        handleServerSocketEvent(fd); // 서버 소켓 이벤트 처리
-    } else {
-        handleClientRequest(fd); // 클라이언트 요청 처리
-    }
+	if (servers.isServerSocketFd(fd)) {
+		handleServerSocketEvent(fd); // 서버 소켓 이벤트 처리
+	} else {
+		// 클라이언트 요청 처리
+		char buffer[1024];
+		ssize_t bytesRead = recv(fd, buffer, sizeof(buffer) - 1, 0);
+
+		if (bytesRead > 0) {
+			buffer[bytesRead] = '\0'; // Null-terminate for safety
+			std::cout << "Received: " << buffer << " from FD: " << fd << std::endl;
+
+			handleClientRequest(fd); // 요청 처리 (예: HTTP 응답)
+		} else if (bytesRead == 0) {
+			// 클라이언트가 연결을 닫은 경우
+			std::cout << "Client disconnected on FD: " << fd << std::endl;
+			kqueueManager.removeFd(fd, EVFILT_READ); // Kqueue에서 제거
+			close(fd); // 소켓 닫기
+		} else {
+			// 읽기 실패 (에러 처리)
+			perror("Error reading from FD");
+			kqueueManager.removeFd(fd, EVFILT_READ); // Kqueue에서 제거
+			close(fd); // 소켓 닫기
+		}
+	}
 }
 
 Webserver::Webserver(const std::string& configFile) {
-    initializeServers(configFile);
+	initializeServers(configFile);
 }
 
 void Webserver::start() {
-    std::cout << "Webserver started." << std::endl;
+	std::cout << "Webserver started." << std::endl;
 
-    while (true) {
-        std::vector<std::pair<int, int> > events = kqueueManager.pollEvents(10, -1); // 인수 추가
-        processEvents(events); // 이벤트 처리
-    }
+	while (true) {
+		std::vector<std::pair<int, int> > events = kqueueManager.pollEvents();
+		processEvents(events); // 이벤트 처리
+	}
 }

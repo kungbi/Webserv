@@ -9,18 +9,19 @@
 
 class Servers {
 private:
-    std::vector<Server*> serverList; // 서버 리스트 (raw pointer)
+	std::vector<Server*> serverList; // 서버 리스트 (raw pointer)
 
 public:
-    Servers();
-    ~Servers();
+	Servers();
+	~Servers();
 
-    void addServer(const std::map<std::string, std::string>& config);
-    bool isServerSocketFd(int fd);
-    Server* getServerForSocketFd(int fd);
-    void handleRequest(int fd);
-    size_t size() const;
-    Server& getServer(size_t index);
+	Server* createServer(const std::map<std::string, std::string>& config);
+	void addServer(Server &server);
+	bool isServerSocketFd(int fd);
+	Server* getServerForSocketFd(int fd);
+	void handleRequest(int fd);
+	size_t size() const;
+	Server& getServer(size_t index);
 };
 
 

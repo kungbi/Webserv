@@ -9,17 +9,17 @@
 
 class Kqueue {
 private:
-    int kqueueFd;
+	int kqueueFd;
 
-    void initialize();
+	void initialize();
 
 public:
-    Kqueue();
-    ~Kqueue();
+	Kqueue();
+	~Kqueue();
 
-    void addFd(int fd, int filter, int flags);
-    void removeFd(int fd, int filter);
-    std::vector< std::pair<int, int> > pollEvents(int maxEvents, int timeoutMs);
+	void addFd(int fd, int filter, int flags);
+	void removeFd(int fd, int filter);
+	std::vector< std::pair<int, int> > pollEvents();
 };
 
 

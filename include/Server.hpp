@@ -7,14 +7,14 @@
 
 class Server {
 private:
-    Socket serverSocket;
-    std::map<std::string, std::string> serverConfig;
+	Socket serverSocket;
+	std::map<std::string, std::string> serverConfig;
 
 public:
-    Server(const std::map<std::string, std::string>& config);
-    int getSocketFd() const;
-    int acceptClient();
-    void handleRequest(int clientFd);
+	Server(const std::map<std::string, std::string>& config);
+	int getSocketFd() const;
+	int acceptClient();
+	void handleRequest(int clientFd);
 };
 
 

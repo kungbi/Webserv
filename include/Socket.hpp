@@ -11,21 +11,21 @@
 
 class Socket {
 private:
-    int socketFd;
-    struct sockaddr_in address;
+	int socketFd;
+	struct sockaddr_in address;
 
-    void setSocketOptions();
-    void bindSocket();
-    void listenSocket(int backlog);
-    void configureSocket(const std::string& ip, int port);
+	void setSocketOptions();
+	void bindSocket();
+	void listenSocket(int backlog);
+	void configureSocket(const std::string& ip, int port);
 
 public:
-    Socket(const std::string& ip, int port);
-    ~Socket();
+	Socket(const std::string& ip, int port);
+	~Socket();
 
-    int acceptConnection();
-    int getSocketFd() const;
-    void closeSocket();
+	int acceptConnection();
+	int getSocketFd() const;
+	void closeSocket();
 };
 
 
