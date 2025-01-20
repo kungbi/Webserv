@@ -11,7 +11,6 @@ class ConfigParser
 	private:
 		std::vector<std::string> tokens_;
 		void	ParserRecursive(std::vector<std::string> tokens, IConfigContext *parent);
-		void	DeleteTree(IConfigContext *root);
 
 	public:
 		void Tokenize(std::string config_data);

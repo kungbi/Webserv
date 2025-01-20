@@ -12,7 +12,6 @@ enum ContextType
 	SERVER,
 	EVENTS,
 	LOCATION,
-	CONTEXT_END
 };
 
 enum MainDirectives
@@ -60,3 +59,4 @@ class IConfigContext
 
 int IsContext(std::string token);
 bool IsDirective(std::string token);
+void DeleteTree(IConfigContext *root);

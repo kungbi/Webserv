@@ -19,26 +19,10 @@ IConfigContext* ConfigParser::Parser()
 		ParserRecursive(tokens_, root);
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;
-		//delete tree(root)
+		DeleteTree(root);
 		return (NULL);
 	}
 	return (root);
-}
-
-void ConfigParser::DeleteTree(IConfigContext *root)
-{
-	IConfigContext *cur = root;
-	std::vector<IConfigContext *> childs = root->getChild();
-
-	if (!root)
-		return ;
-	if (childs.empty())
-		return ;
-	for (size_t i = 0; i < childs.size(); ++i)
-	{
-		DeleteTree(childs[i]);
-	}
-	delete (root);
 }
 
 void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigContext *parent)

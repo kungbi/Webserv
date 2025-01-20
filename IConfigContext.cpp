@@ -53,3 +53,17 @@ int IConfigContext::getType() const
 {
 	return (type_);
 }
+
+void DeleteTree(IConfigContext *root)
+{
+	IConfigContext *cur = root;
+	std::vector<IConfigContext *> childs = root->getChild();
+
+	if (!root)
+		return ;
+	for (size_t i = 0; i < childs.size(); ++i)
+	{
+		DeleteTree(childs[i]);
+	}
+	delete (root);
+}

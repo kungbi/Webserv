@@ -7,6 +7,12 @@ class ConfigData
 	private:
 		IConfigContext *root_;
 		ConfigData();
+		void ValidCheck(IConfigContext *root);
+		void MainContextCheck(IConfigContext *node);
+		void HttpContextCheck(IConfigContext *node);
+		void ServerContextCheck(IConfigContext *node);
+		void EventsContextCheck(IConfigContext *node);
+		void LocationContextCheck(IConfigContext *node);
 
 	public:
 		ConfigData(IConfigContext *root);
