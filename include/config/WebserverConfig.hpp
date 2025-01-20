@@ -9,7 +9,7 @@
 class WebserverConfig {
 private:
     HTTPConfig httpConfig; // HTTP 설정
-    std::vector<ServerConfig> servers; // 여러 서버 설정
+	int workerConnections;
 
 public:
     // 생성자

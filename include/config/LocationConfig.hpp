@@ -5,10 +5,14 @@
 
 class LocationConfig {
 private:
-    std::string uri;          // 경로 (예: /images, /api)
     std::string root;         // 루트 디렉토리
     bool autoIndex;           // 디렉토리 인덱싱 허용 여부
     std::string redirect;     // 리다이렉트 경로
+	std::vector<std::string> allowMethod;
+
+	/**
+	 * CGI관련 변수들 추가
+	*/
 
 public:
     LocationConfig(const std::string& uri = "/", const std::string& root = "/var/www/html", bool autoIndex = false, const std::string& redirect = "");

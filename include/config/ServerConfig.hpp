@@ -3,17 +3,28 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <string>
 #include "LocationConfig.hpp"
 
 class ServerConfig {
 private:
+    int port;                 // 포트 번호
     std::string serverName;   // 서버 이름
     std::string root;         // 루트 디렉토리
-    int port;                 // 포트 번호
-    std::vector<LocationConfig> locations; // 로케이션 설정
+	std::vector<std::string> index;
+	int client_max_body_size;
+
+	std::map<std::string, std::string> errorPages;
+
+
+    std::map<std::string, LocationConfig> exactLocations; // = 로케이션 설정
+    std::map<std::string, LocationConfig> prefixLocations; // ~, ~*, etc 로케이션 설정
+    std::map<std::string, LocationConfig> regexLocations; // 로케이션 설정
+
 
 public:
-    ServerConfig(const std::string& name = "localhost", const std::string& root = "/var/www", int port = 80);
+    ServerConfig(const std::string& name, const std::string& root, int port);
 
     // 설정 접근자
     std::string getServerName() const;
