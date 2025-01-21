@@ -9,7 +9,7 @@ void Kqueue::initialize() {
 	std::cout << "Kqueue initialized with FD: " << kqueueFd << std::endl;
 }
 
-Kqueue::Kqueue() {
+Kqueue::Kqueue(int maxEvents) : maxEvents(maxEvents) {
 	initialize();
 }
 
@@ -41,11 +41,10 @@ void Kqueue::removeFd(int fd, int filter) {
 	}
 }
 
-static const int MAX_EVENTS = 10;
 static const int TIMEOUT_MS = -1;
 
 std::vector< std::pair<int, int> > Kqueue::pollEvents() {
-	struct kevent events[MAX_EVENTS];
+	struct kevent events[maxEvents];
 	struct timespec timeout;
 	struct timespec *timeoutPtr = nullptr;
 
@@ -55,7 +54,7 @@ std::vector< std::pair<int, int> > Kqueue::pollEvents() {
 		timeoutPtr = &timeout;
 	}
 
-	int eventCount = kevent(kqueueFd, nullptr, 0, events, MAX_EVENTS, timeoutPtr);
+	int eventCount = kevent(kqueueFd, nullptr, 0, events, maxEvents, timeoutPtr);
 	if (eventCount == -1) {
 		perror("Error polling kqueue events");
 		return std::vector<std::pair<int, int> >(); // 빈 벡터 반환

@@ -76,7 +76,7 @@ void Webserver::processReadEvent(int fd) {
 	}
 }
 
-Webserver::Webserver(const WebserverConfig& config) {
+Webserver::Webserver(const WebserverConfig& config): kqueueManager(config.getWorkerConnections()) {
 	initializeServers(config);
 }
 

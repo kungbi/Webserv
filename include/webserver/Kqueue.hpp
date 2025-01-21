@@ -10,11 +10,12 @@
 class Kqueue {
 private:
 	int kqueueFd;
+	int maxEvents;
 
 	void initialize();
 
 public:
-	Kqueue();
+	Kqueue(int maxEvents);
 	~Kqueue();
 
 	void addFd(int fd, int filter, int flags);
