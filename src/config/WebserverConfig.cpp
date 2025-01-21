@@ -1,19 +1,16 @@
 #include "WebserverConfig.hpp"
 
-WebserverConfig::WebserverConfig() {}
-
-HTTPConfig& WebserverConfig::getHTTPConfig() {
-    return httpConfig;
+WebserverConfig::WebserverConfig(const HTTPConfig& httpConfig, int workerConnections)
+	: httpConfig(httpConfig), workerConnections(workerConnections) {
+	if (workerConnections < 1) {
+		throw std::invalid_argument("workerConnections must be greater than 0");
+	}
 }
 
-const HTTPConfig& WebserverConfig::getHTTPConfig() const {
-    return httpConfig;
+HTTPConfig& WebserverConfig::getHTTPConfig() const {
+	return const_cast<HTTPConfig&>(httpConfig);
 }
 
-void WebserverConfig::addServer(const ServerConfig& server) {
-    servers.push_back(server);
-}
-
-const std::vector<ServerConfig>& WebserverConfig::getServers() const {
-    return servers;
+int WebserverConfig::getWorkerConnections() const {
+	return workerConnections;
 }

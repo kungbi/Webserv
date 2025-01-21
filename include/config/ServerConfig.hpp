@@ -9,36 +9,43 @@
 
 class ServerConfig {
 private:
-    int port;                 // 포트 번호
-    std::string serverName;   // 서버 이름
-    std::string root;         // 루트 디렉토리
+	int port;                 // 포트 번호
+	std::string serverName;   // 서버 이름
+	std::string root;         // 루트 디렉토리
 	std::vector<std::string> index;
 	int client_max_body_size;
 
 	std::map<std::string, std::string> errorPages;
 
 
-    std::map<std::string, LocationConfig> exactLocations; // = 로케이션 설정
-    std::map<std::string, LocationConfig> prefixLocations; // ~, ~*, etc 로케이션 설정
-    std::map<std::string, LocationConfig> regexLocations; // 로케이션 설정
+	std::map<std::string, LocationConfig> exactLocations; // = 로케이션 설정
+	std::map<std::string, LocationConfig> prefixLocations; // ~, ~*, etc 로케이션 설정
+	std::map<std::string, LocationConfig> regexLocations; // 로케이션 설정
 
+	ServerConfig();
 
 public:
-    ServerConfig(const std::string& name, const std::string& root, int port);
+	ServerConfig(
+		const std::string& serverName, 
+		const std::string& root, 
+		int port, 
+		const std::vector<std::string>& index, 
+		int client_max_body_size, 
+		const std::map<std::string, std::string>& errorPages,
+		const std::map<std::string, LocationConfig>& exactLocations,
+		const std::map<std::string, LocationConfig>& prefixLocations,
+		const std::map<std::string, LocationConfig>& regexLocations
+	);
 
-    // 설정 접근자
-    std::string getServerName() const;
-    void setServerName(const std::string& name);
-
-    std::string getRoot() const;
-    void setRoot(const std::string& root);
-
-    int getPort() const;
-    void setPort(int port);
-
-    // 로케이션 설정
-    void addLocation(const LocationConfig& location);
-    const std::vector<LocationConfig>& getLocations() const;
+	std::string getServerName() const;
+	std::string getRoot() const;
+	int getPort() const;
+	std::vector<std::string> getIndex() const;
+	int getClientMaxBodySize() const;
+	std::map<std::string, std::string> getErrorPages() const;
+	std::map<std::string, LocationConfig> getExactLocations() const;
+	std::map<std::string, LocationConfig> getPrefixLocations() const;
+	std::map<std::string, LocationConfig> getRegexLocations() const;
 };
 
-#endif // SERVERCONFIG_HPP
+#endif

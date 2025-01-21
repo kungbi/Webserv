@@ -1,62 +1,73 @@
 #include "Webserver.hpp"
 #include "WebserverConfig.hpp"
+#include "ServerConfig.hpp"
+#include "HTTPConfig.hpp"
+#include "LocationConfig.hpp"
 
+WebserverConfig* initializeConfig() {
+    // LocationConfig를 위한 벡터 생성 및 초기화
+    std::vector<std::string> location1Methods;
+    location1Methods.push_back("GET");
+    location1Methods.push_back("POST");
 
-void initializeConfig(WebserverConfig& config) {
-	 // Webserver 설정
-    WebserverConfig webConfig;
+    std::vector<std::string> location1FastcgiIndex;
+    location1FastcgiIndex.push_back("index.php");
+    location1FastcgiIndex.push_back("main.php");
 
-    // HTTP 설정
-    HTTPConfig& httpConfig = webConfig.getHTTPConfig();
-    httpConfig.setServerHeader("MyCustomWebserver");
-    httpConfig.setKeepAlive(true);
-    httpConfig.setMaxRequestSize(10240);
+    LocationConfig location1(
+        "/var/www/images", false, "/redirect/path", location1Methods, "/usr/local/bin/php-cgi", location1FastcgiIndex
+    );
 
-    // 서버 1 설정
-    ServerConfig server1("localhost", "/var/www/html", 8080);
+    std::vector<std::string> location2Methods;
+    location2Methods.push_back("GET");
 
-    // 서버 1의 로케이션 설정
-    LocationConfig loc1("/images", "/var/www/html/images", true, "");
-    LocationConfig loc2("/api", "/var/www/html/api", false, "https://api.example.com");
+    std::vector<std::string> location2FastcgiIndex;
+    location2FastcgiIndex.push_back("api.py");
 
-    server1.addLocation(loc1);
-    server1.addLocation(loc2);
+    LocationConfig location2(
+        "/var/www/api", false, "", location2Methods, "/usr/bin/python-cgi", location2FastcgiIndex
+    );
 
-    // 서버 2 설정
-    ServerConfig server2("example.com", "/var/www/example", 9090);
+    // 빈 map 생성
+    std::map<std::string, LocationConfig> emptyLocations;
+    std::map<std::string, std::string> errorPages;
+    errorPages["404"] = "/error_pages/404.html";
+    errorPages["500"] = "/error_pages/500.html";
 
-    // 서버 2의 로케이션 설정
-    LocationConfig loc3("/", "/var/www/example", true, "");
+    std::vector<std::string> server1Index;
+    server1Index.push_back("index.html");
+    server1Index.push_back("index.htm");
 
-    server2.addLocation(loc3);
+    ServerConfig serverConfig1(
+        "MyServer1", "/var/www/html", 8080, server1Index, 1024 * 1024,
+        errorPages, emptyLocations, emptyLocations, emptyLocations
+    );
 
-    // WebserverConfig에 서버 추가
-    webConfig.addServer(server1);
-    webConfig.addServer(server2);
+    // HTTPConfig 인스턴스 생성
+    std::vector<ServerConfig> servers;
+    servers.push_back(serverConfig1);
 
-    // 설정 출력
-    std::cout << "HTTP Server Header: " << httpConfig.getServerHeader() << std::endl;
-    std::cout << "Keep-Alive: " << (httpConfig.isKeepAlive() ? "Enabled" : "Disabled") << std::endl;
-    std::cout << "Max Request Size: " << httpConfig.getMaxRequestSize() << " bytes" << std::endl;
+    HTTPConfig httpConfig(servers);
 
-    const std::vector<ServerConfig>& servers = webConfig.getServers();
-    for (size_t i = 0; i < servers.size(); ++i) {
-        const ServerConfig& server = servers[i];
-        std::cout << "Server " << i + 1 << ": " << server.getServerName() << " on port " << server.getPort() << std::endl;
-        const std::vector<LocationConfig>& locations = server.getLocations();
-        for (size_t j = 0; j < locations.size(); ++j) {
-            const LocationConfig& loc = locations[j];
-            std::cout << "  Location " << j + 1 << ": " << loc.getURI() << " -> " << loc.getRoot() << std::endl;
-        }
-    }
-
+    // WebserverConfig 인스턴스 생성
+    return new WebserverConfig(httpConfig, 1024);
 }
 
 int main(int argc, char* argv[]) {
+    WebserverConfig* config = initializeConfig();
+	std::cout << "WebserverConfig initialized" << std::endl;
+	std::cout << "HTTPConfig: " << config->getHTTPConfig().getServers().size() << std::endl;
+	std::cout << "Worker connections: " << config->getWorkerConnections() << std::endl;
 
+	std::cout << "ServerConfig: " << config->getHTTPConfig().getServers()[0].getServerName() << std::endl;
+	std::cout << "Root: " << config->getHTTPConfig().getServers()[0].getRoot() << std::endl;
+	std::cout << "Port: " << config->getHTTPConfig().getServers()[0].getPort() << std::endl;
 
-	Webserver webserver("config.conf");
-	webserver.start();
+	std::cout << std::endl;
 
-	return 0;
+    Webserver webserver("config.conf");
+    webserver.start();
+
+    delete config; // 메모리 해제
+    return 0;
 }
