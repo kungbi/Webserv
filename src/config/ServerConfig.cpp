@@ -11,9 +11,9 @@ ServerConfig::ServerConfig(
 	const std::map<std::string, LocationConfig>& prefixLocations,
 	const std::map<std::string, LocationConfig>& regexLocations)
 	:
+	port(port), 
 	serverName(serverName),
 	root(root), 
-	port(port), 
 	index(index), 
 	client_max_body_size(client_max_body_size), 
 	errorPages(errorPages), 
