@@ -4,14 +4,15 @@
 # include <iostream>
 # include <map>
 # include "Socket.hpp"
+# include "ServerConfig.hpp"
 
 class Server {
 private:
 	Socket serverSocket;
-	std::map<std::string, std::string> serverConfig;
+	const ServerConfig& serverConfig;
 
 public:
-	Server(const std::map<std::string, std::string>& config);
+	Server(const ServerConfig& config);
 	int getSocketFd() const;
 	int acceptClient();
 	void handleRequest(int clientFd);

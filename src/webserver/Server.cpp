@@ -1,9 +1,9 @@
 #include "Server.hpp"
 
-Server::Server(const std::map<std::string, std::string>& config)
-	: serverSocket(config.at("ip"), std::stoi(config.at("port"))),
+Server::Server(const ServerConfig& config)
+	: serverSocket("127.0.0.1", config.getPort()),
 	  serverConfig(config) {
-	std::cout << "Server initialized at " << config.at("ip") << ":" << config.at("port") << std::endl;
+	std::cout << "Server initialized at " << serverConfig.getServerName() << ":" << serverConfig.getPort() << std::endl;
 }
 
 int Server::getSocketFd() const {
@@ -15,7 +15,6 @@ int Server::acceptClient() {
 }
 
 void Server::handleRequest(int clientFd) {
-	std::cout << "Handling request on FD: " << clientFd << " at Server "
-			  << serverConfig.at("ip") << ":" << serverConfig.at("port") << std::endl;
+	std::cout << "Handling request for client FD: " << clientFd << std::endl;
 	// 요청 처리 로직 추가
 }

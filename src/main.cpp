@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 
 	std::cout << std::endl;
 
-    Webserver webserver("config.conf");
+    Webserver webserver(*config);
     webserver.start();
 
     delete config; // 메모리 해제

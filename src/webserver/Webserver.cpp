@@ -1,26 +1,15 @@
 #include "Webserver.hpp"
 
-void Webserver::initializeServers(const std::string& configFile) {
-	configFile.c_str();
-	// 서버 설정파일을 읽어서 설정 객체 가져오기.
+void Webserver::initializeServers(const WebserverConfig& config) {
+	HTTPConfig& httpConfig = config.getHTTPConfig();
 
-	// 예제 서버 설정
-	std::map<std::string, std::string> server1Config;
-	server1Config.insert(std::make_pair("ip", "127.0.0.1"));
-	server1Config.insert(std::make_pair("port", "8080"));
+	for (std::vector<ServerConfig>::const_iterator it = httpConfig.getServers().begin(); it != httpConfig.getServers().end(); ++it) {
+		ServerConfig serverConfig = *it;
+		Server* server = servers.createServer(serverConfig);
 
-	std::map<std::string, std::string> server2Config;
-	server2Config.insert(std::make_pair("ip", "127.0.0.1"));
-	server2Config.insert(std::make_pair("port", "9090"));
-
-	Server* server1 = servers.createServer(server1Config);
-	Server* server2 = servers.createServer(server2Config);
-
-	kqueueManager.addFd(server1->getSocketFd(), EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
-	kqueueManager.addFd(server2->getSocketFd(), EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
-
-	servers.addServer(*server1);
-	servers.addServer(*server2);
+		kqueueManager.addFd(server->getSocketFd(), EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
+		servers.addServer(*server);
+	}
 }
 
 void Webserver::registerFd(int clientFd) {
@@ -87,8 +76,8 @@ void Webserver::processReadEvent(int fd) {
 	}
 }
 
-Webserver::Webserver(const std::string& configFile) {
-	initializeServers(configFile);
+Webserver::Webserver(const WebserverConfig& config) {
+	initializeServers(config);
 }
 
 void Webserver::start() {

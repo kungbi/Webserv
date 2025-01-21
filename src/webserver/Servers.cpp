@@ -8,7 +8,7 @@ Servers::~Servers() {
 	}
 }
 
-Server* Servers::createServer(const std::map<std::string, std::string>& config) {
+Server* Servers::createServer(const ServerConfig& config) {
 	return new Server(config);
 }
 

@@ -7,13 +7,14 @@
 # include <iostream>
 # include "Kqueue.hpp"
 # include "Servers.hpp"
+# include "WebserverConfig.hpp"
 
 class Webserver {
 private:
 	Kqueue kqueueManager;
 	Servers servers;
 
-	void initializeServers(const std::string& configFile);
+	void initializeServers(const WebserverConfig& config);
 	void registerFd(int clientFd);
 	void handleServerSocketEvent(int fd);
 	void handleClientRequest(int fd);
@@ -21,7 +22,7 @@ private:
 	void processReadEvent(int fd);
 
 public:
-	Webserver(const std::string& configFile);
+	Webserver(const WebserverConfig& config);
 	void start();
 };
 

@@ -15,7 +15,7 @@ public:
 	Servers();
 	~Servers();
 
-	Server* createServer(const std::map<std::string, std::string>& config);
+	Server* createServer(const ServerConfig& config);
 	void addServer(Server &server);
 	bool isServerSocketFd(int fd);
 	Server* getServerForSocketFd(int fd);
