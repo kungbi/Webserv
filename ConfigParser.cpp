@@ -13,7 +13,7 @@ void ConfigParser::Tokenize(std::string config_data)
 
 IConfigContext* ConfigParser::Parser()
 {
-	IConfigContext *root = new IConfigContext(NULL, MAIN);
+	IConfigContext *root = new IConfigContext(NULL, IConfigContext::MAIN);
 
 	try {
 		ParserRecursive(tokens_, root);
@@ -73,13 +73,15 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 				throw (ConfigParser::ConfigSyntaxError());
 			}
 		}
-		else if (IsDirective(*it))
+		int DirectiveType = IsDirective(*it);
+		if (DirectiveType > -1)
 		{
 			//*it = 지시어 토큰
 			if (it == last_it)
 				throw (ConfigParser::ConfigSyntaxError());
 
-			std::string Directive = *it;
+			std::string DirectiveStr = *it;
+			IConfigDirective *directive = new IConfigDirective(parent, DirectiveType);
 			++it;
 
 			while (it != tokens.end() && *it != ";")
@@ -88,12 +90,13 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 
 				--TokenIterEnd;
 				if (*TokenIterEnd == ';') {
-					parent->AddDirectives(Directive, it->substr(0, it->size() - 1));
+					directive->AddValue(it->substr(0, it->size() - 1));
 					break ;
 				}
-				parent->AddDirectives(Directive, *it);
+				directive->AddValue(*it);
 				++it;
 			}
+			parent->AddDirectives(directive);
 		}
 		else {
 			throw (ConfigParser::ConfigSyntaxError());
@@ -117,26 +120,6 @@ int IsContext(std::string token)
 			return (static_cast<int>(i));
 	}
 	return (-1);
-}
-
-bool IsDirective(std::string token)
-{
-	std::vector<std::string> DirectiveStrings;
-	DirectiveStrings.push_back("worker_processes");
-	DirectiveStrings.push_back("worker_connections");
-	DirectiveStrings.push_back("listen");
-	DirectiveStrings.push_back("server_name");
-	DirectiveStrings.push_back("root");
-	DirectiveStrings.push_back("index");
-	DirectiveStrings.push_back("error_page");
-	DirectiveStrings.push_back("access_log");
-
-	for (size_t i = 0; i < DirectiveStrings.size(); ++i)
-	{
-		if (token == DirectiveStrings[i])
-			return (true);
-	}
-	return (false);
 }
 
 const char* ConfigParser::ConfigSyntaxError::what() const throw()

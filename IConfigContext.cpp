@@ -9,14 +9,16 @@ IConfigContext::IConfigContext(IConfigContext *parent, int type) : parent_(paren
 }
 
 IConfigContext::~IConfigContext()
-{
-	for (std::vector<IConfigContext *>::iterator it = child_.begin(); it != child_.end();)
-		delete *it;
-}
+{}
 
 void IConfigContext::AddChild(IConfigContext *child)
 {
 	child_.push_back(child);
+}
+
+void	IConfigContext::AddDirectives(IConfigDirective *directive)
+{
+	directives_.push_back(directive);
 }
 
 IConfigContext* IConfigContext::getParent() const
@@ -29,12 +31,7 @@ std::vector<IConfigContext *> IConfigContext::getChild() const
 	return (child_);
 }
 
-void IConfigContext::AddDirectives(std::string key, std::string value)
-{
-	directives_[key].push_back(value);
-}
-
-std::map<std::string, std::vector<std::string> > IConfigContext::getDirectives() const
+std::vector<IConfigDirective*> IConfigContext::getDirectives() const
 {
 	return (directives_);
 }
@@ -66,4 +63,9 @@ void DeleteTree(IConfigContext *root)
 		DeleteTree(childs[i]);
 	}
 	delete (root);
+	std::vector<IConfigDirective *> directives = root->getDirectives();
+	for (size_t i = 0; i < directives.size(); ++i)
+	{
+		delete directives[i];
+	}
 }

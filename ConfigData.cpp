@@ -47,28 +47,17 @@ void ConfigData::ValidCheck(IConfigContext *root)
 
 void ConfigData::MainContextCheck(IConfigContext *node)
 {
-	std::map<std::string, std::vector<std::string> > directives = node->getDirectives();
-	
-	if (directives.count("worker_processes") == 0) {
-		node->AddDirectives("worker_processes", "1");
-		return ;
-	}
-	if (directives["worker_processes"].size() > 1)
-		throw ;
-	int worker_processes = std::atoi(directives["worker_processes"][0].c_str());
-	if (worker_processes < 1 || worker_processes > 10)
-		throw ;
 }
 
 void ConfigData::HttpContextCheck(IConfigContext *node)
 {
-	if (node->getParent()->getType() != MAIN)
+}
+
+void ConfigData::ServerContextCheck(IConfigContext *node)
+{
+	if (node->getParent()->getType() != IConfigContext::HTTP)
 		throw ;
 
-	std::map<std::string, std::vector<std::string> > directives = node->getDirectives();
-
-	if (directives.count("error_page") < 2)
-		throw ;
 	
 }
 

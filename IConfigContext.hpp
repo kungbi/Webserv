@@ -4,35 +4,8 @@
 # include <vector>
 # include <map>
 # include <stdexcept>
+# include "IConfigDirective.hpp"
 
-enum ContextType
-{
-	MAIN,
-	HTTP,
-	SERVER,
-	EVENTS,
-	LOCATION,
-};
-
-enum MainDirectives
-{
-	WORKER_PROCESSES,
-	ERROR_LOG,
-	PID,
-	USER,
-};
-
-enum HttpDirectives
-{};
-
-enum ServerDirectives
-{};
-
-enum EventsDirectives
-{};
-
-enum LocationDirectives
-{};
 
 class IConfigContext
 {
@@ -40,7 +13,7 @@ class IConfigContext
 		IConfigContext *parent_;
 		int	type_;
 		std::vector<IConfigContext *> child_;
-		std::map<std::string, std::vector<std::string> > directives_;
+		std::vector<IConfigDirective *> directives_;
 
 		void	AddChild(IConfigContext *child);
 	public:
@@ -53,10 +26,18 @@ class IConfigContext
 		IConfigContext* getParent() const;
 		std::vector<IConfigContext *> getChild() const;
 
-		void	AddDirectives(std::string key, std::string value);
-		std::map<std::string, std::vector<std::string> > getDirectives() const;
+		void	AddDirectives(IConfigDirective *directive);
+		std::vector<IConfigDirective *> getDirectives() const;
+
+		enum ContextType
+		{
+			MAIN,
+			HTTP,
+			SERVER,
+			EVENTS,
+			LOCATION,
+		};
 };
 
 int IsContext(std::string token);
-bool IsDirective(std::string token);
 void DeleteTree(IConfigContext *root);

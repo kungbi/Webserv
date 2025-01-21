@@ -1,6 +1,7 @@
 #pragma once
 
 # include "IConfigContext.hpp"
+# include "IConfigDirective.hpp"
 # include <vector>
 # include <sstream>
 # include <stdexcept>
