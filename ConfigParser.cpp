@@ -13,7 +13,7 @@ void ConfigParser::Tokenize(std::string config_data)
 
 IConfigContext* ConfigParser::Parser()
 {
-	IConfigContext *root = new IConfigContext(NULL, IConfigContext::MAIN);
+	IConfigContext *root = new IConfigContext(NULL, MAIN);
 
 	try {
 		ParserRecursive(tokens_, root);
@@ -36,8 +36,8 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 	}
 	while (it != tokens.end())
 	{
-		int ContextType = IsContext(*it);
-		if (ContextType > 0)
+		ContextType contextType = IsContext(*it);
+		if (contextType != ContextType::END)
 		{
 			if (*(++it) != "{") {
 				throw (ConfigParser::ConfigSyntaxError());
@@ -49,7 +49,7 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 
 			int BracketCount = 1;
 			std::vector<std::string> SubTokens;
-			IConfigContext* node = new IConfigContext(parent, ContextType);
+			IConfigContext* node = new IConfigContext(parent, contextType);
 			
 			while (it != tokens.end())
 			{
@@ -73,15 +73,15 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 				throw (ConfigParser::ConfigSyntaxError());
 			}
 		}
-		int DirectiveType = IsDirective(*it);
-		if (DirectiveType > -1)
+		DirectiveType directiveType = IsDirective(*it);
+		if (directiveType != DirectiveType::END)
 		{
 			//*it = 지시어 토큰
 			if (it == last_it)
 				throw (ConfigParser::ConfigSyntaxError());
 
 			std::string DirectiveStr = *it;
-			IConfigDirective *directive = new IConfigDirective(parent, DirectiveType);
+			IConfigDirective *directive = new IConfigDirective(parent, directiveType);
 			++it;
 
 			while (it != tokens.end() && *it != ";")
@@ -105,21 +105,22 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 	}
 }
 
-int IsContext(std::string token)
+ContextType IsContext(std::string token)
 {
-	std::vector<std::string> ContextStrings;
-	ContextStrings.push_back("main");
-	ContextStrings.push_back("http");
-	ContextStrings.push_back("server");
-	ContextStrings.push_back("events");
-	ContextStrings.push_back("location");
+	std::vector<std::string> ContextStrings = {
+		"main",
+		"http",
+		"server",
+		"events",
+		"location",
+	};
 
-	for (size_t i = 0; i < ContextStrings.size(); ++i)
+	for (ContextType i = MAIN; i < ContextType::END; i = static_cast<ContextType>(i + 1))
 	{
-		if (token == ContextStrings[i])
-			return (static_cast<int>(i));
+		if (token == ContextStrings[static_cast<int>(i)])
+			return (i);
 	}
-	return (-1);
+	return (ContextType::END);
 }
 
 const char* ConfigParser::ConfigSyntaxError::what() const throw()

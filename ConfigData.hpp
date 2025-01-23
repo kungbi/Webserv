@@ -15,6 +15,7 @@ class ConfigData
 		void ServerContextCheck(IConfigContext *node);
 		void EventsContextCheck(IConfigContext *node);
 		void LocationContextCheck(IConfigContext *node);
+
 		void ErrorPageDirectiveCheck(IConfigDirective *dir);
 		void WorkerProcessesDirectiveCheck(IConfigDirective *dir);
 		void ListenDirectiveCheck(IConfigDirective *dir);
@@ -25,7 +26,12 @@ class ConfigData
 		void AllowMethodDirectiveCheck(IConfigDirective *dir);
 		void AutoIndexDirectiveCheck(IConfigDirective *dir);
 
+		bool CallDirectiveCheck(std::vector<IConfigDirective *> directives);
+		
+
 	public:
+		typedef void (ConfigData::*DirectiveCheckFunction)(IConfigDirective *node);
+		ConfigData::DirectiveCheckFunction ConfigData::getDirectiveCheckFuntion(DirectiveType type);
 		ConfigData(IConfigContext *root);
 		~ConfigData(); // 트리 전부 삭제.
 		IConfigContext *GetRoot();

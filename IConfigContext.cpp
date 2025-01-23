@@ -1,6 +1,6 @@
 #include "IConfigContext.hpp"
 
-IConfigContext::IConfigContext(IConfigContext *parent, int type) : parent_(parent), type_(type)
+IConfigContext::IConfigContext(IConfigContext *parent, ContextType type) : parent_(parent), type_(type)
 {
 	if (parent)
 	{
@@ -46,7 +46,7 @@ bool IConfigContext::IsValid() const
 	return (true);
 }
 
-int IConfigContext::getType() const
+ContextType IConfigContext::getType() const
 {
 	return (type_);
 }

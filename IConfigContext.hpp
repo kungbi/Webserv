@@ -6,20 +6,29 @@
 # include <stdexcept>
 # include "IConfigDirective.hpp"
 
+enum ContextType
+{
+	MAIN,
+	HTTP,
+	SERVER,
+	EVENTS,
+	LOCATION,
+	END
+};
 
 class IConfigContext
 {
 	private:
 		IConfigContext *parent_;
-		int	type_;
+		ContextType	type_;
 		std::vector<IConfigContext *> child_;
 		std::vector<IConfigDirective *> directives_;
 
 		void	AddChild(IConfigContext *child);
 	public:
-		IConfigContext(IConfigContext *parent, int type);
+		IConfigContext(IConfigContext *parent, ContextType type);
 		~IConfigContext();
-		int getType() const;
+		ContextType getType() const;
 		void PrintType(std::ostream &os) const;
 		bool IsValid() const;
 		
@@ -29,15 +38,7 @@ class IConfigContext
 		void	AddDirectives(IConfigDirective *directive);
 		std::vector<IConfigDirective *> getDirectives() const;
 
-		enum ContextType
-		{
-			MAIN,
-			HTTP,
-			SERVER,
-			EVENTS,
-			LOCATION,
-		};
 };
 
-int IsContext(std::string token);
+ContextType IsContext(std::string token);
 void DeleteTree(IConfigContext *root);
