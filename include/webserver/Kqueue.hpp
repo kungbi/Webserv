@@ -1,11 +1,18 @@
 #ifndef KQUEUE_HPP
 # define KQUEUE_HPP
 
-#include <iostream>
-#include <vector>
-#include <sys/event.h>
-#include <sys/types.h>
-#include <unistd.h>
+# include <iostream>
+# include <vector>
+# include <sys/event.h>
+# include <sys/types.h>
+# include <unistd.h>
+# include "Server.hpp"
+
+enum EVENT_TYPE {
+	SERVER,
+	REQUEST,
+	RESPONSE
+};
 
 class Kqueue {
 private:
@@ -13,12 +20,13 @@ private:
 	int maxEvents;
 
 	void initialize();
+	int getFilter(int eventType);
 
 public:
 	Kqueue(int maxEvents);
 	~Kqueue();
 
-	void addFd(int fd, int filter, int flags);
+	void addEvent(int fd, int eventType, Server& server);
 	void removeFd(int fd, int filter);
 	struct kevent* pollEvents();
 };

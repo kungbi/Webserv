@@ -15,7 +15,6 @@ private:
 	Servers servers;
 
 	void initializeServers(const WebserverConfig& config);
-	void registerFd(int clientFd);
 	void handleServerSocketEvent(int fd);
 	void handleClientRequest(int fd);
 	void processEvents(struct kevent& event);

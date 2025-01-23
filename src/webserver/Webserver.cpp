@@ -7,22 +7,19 @@ void Webserver::initializeServers(const WebserverConfig& config) {
 		ServerConfig serverConfig = *it;
 		Server* server = servers.createServer(serverConfig);
 
-		kqueueManager.addFd(server->getSocketFd(), EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
+		kqueueManager.addEvent(server->getSocketFd(), SERVER, *server); // Kqueue에 등록
 		servers.addServer(*server);
 	}
 }
 
-void Webserver::registerFd(int clientFd) {
-	kqueueManager.addFd(clientFd, EVFILT_READ, EV_ADD | EV_ENABLE); // Kqueue에 등록
-	std::cout << "Client FD: " << clientFd << " registered with Kqueue." << std::endl;
-}
 
 void Webserver::handleServerSocketEvent(int fd) {
 	Server* server = servers.getServerForSocketFd(fd);
 	if (server) {
 		int clientFd = server->acceptClient(); // 클라이언트 FD 반환
 		if (clientFd != -1) {
-			registerFd(clientFd); // 클라이언트 FD를 Kqueue에 등록
+			kqueueManager.addEvent(clientFd, REQUEST, *server); // Kqueue에 등록
+			std::cout << "Client FD: " << clientFd << " registered with Kqueue." << std::endl;
 		} else {
 			std::cerr << "Failed to accept client on FD: " << fd << std::endl;
 		}

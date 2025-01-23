@@ -21,9 +21,24 @@ Kqueue::~Kqueue() {
 	}
 }
 
-void Kqueue::addFd(int fd, int filter, int flags) {
+int Kqueue::getFilter(int eventType) {
+	if (eventType == SERVER) {
+		return EVFILT_READ;
+	}
+	if (eventType == REQUEST) {
+		return EVFILT_READ;
+	}
+	if (eventType == RESPONSE) {
+		return EVFILT_WRITE;
+	}
+	throw std::runtime_error("Invalid event type");
+}
+
+void Kqueue::addEvent(int fd, int eventType, Server& server) {
+	int filter = getFilter(eventType);
 	struct kevent event;
-	EV_SET(&event, fd, filter, flags, 0, 0, nullptr);
+
+	EV_SET(&event, fd, filter, EV_ADD | EV_ENABLE, 0, 0, &server);
 	if (kevent(kqueueFd, &event, 1, nullptr, 0, nullptr) == -1) {
 		perror("Failed to add FD to kqueue");
 	} else {
