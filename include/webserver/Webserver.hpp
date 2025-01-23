@@ -18,7 +18,7 @@ private:
 	void registerFd(int clientFd);
 	void handleServerSocketEvent(int fd);
 	void handleClientRequest(int fd);
-	void processEvents(const std::vector< std::pair<int, int> >& events);
+	void processEvents(struct kevent& event);
 	void processReadEvent(int fd);
 
 public:

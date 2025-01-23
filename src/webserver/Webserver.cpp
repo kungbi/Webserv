@@ -39,13 +39,12 @@ void Webserver::handleClientRequest(int fd) {
 	std::cout << "Connection closed for FD: " << fd << std::endl;
 }
 
-void Webserver::processEvents(const std::vector<std::pair<int, int> >& events) {
-	for (std::vector<std::pair<int, int> >::const_iterator it = events.begin(); it != events.end(); ++it) {
-		int fd = it->first;
-		int filter = it->second;
-		if (filter == EVFILT_READ) {
-			processReadEvent(fd); // READ 이벤트 처리
-		}
+void Webserver::processEvents(struct kevent& event) {
+	int fd = event.ident;
+	int filter = event.filter;
+
+	if (filter == EVFILT_READ) {
+		processReadEvent(fd); // READ 이벤트 처리
 	}
 }
 
@@ -84,7 +83,8 @@ void Webserver::start() {
 	std::cout << "Webserver started." << std::endl;
 
 	while (true) {
-		std::vector<std::pair<int, int> > events = kqueueManager.pollEvents();
-		processEvents(events); // 이벤트 처리
+		struct kevent* event = kqueueManager.pollEvents();
+		processEvents(*event); // 이벤트 처리
+		delete event; // 메모리 해제
 	}
 }

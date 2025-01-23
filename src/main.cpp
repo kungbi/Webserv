@@ -53,7 +53,14 @@ WebserverConfig* initializeConfig() {
     return new WebserverConfig(httpConfig, 1024);
 }
 
+#include <stdlib.h>
+
+void leak() {
+	system("leaks webserv");
+}
+
 int main(int argc, char* argv[]) {
+	atexit(leak);
     WebserverConfig* config = initializeConfig();
 	std::cout << "WebserverConfig initialized" << std::endl;
 	std::cout << "HTTPConfig: " << config->getHTTPConfig().getServers().size() << std::endl;

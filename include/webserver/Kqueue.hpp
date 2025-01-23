@@ -20,7 +20,7 @@ public:
 
 	void addFd(int fd, int filter, int flags);
 	void removeFd(int fd, int filter);
-	std::vector< std::pair<int, int> > pollEvents();
+	struct kevent* pollEvents();
 };
 
 

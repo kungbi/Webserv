@@ -43,7 +43,7 @@ void Kqueue::removeFd(int fd, int filter) {
 
 static const int TIMEOUT_MS = -1;
 
-std::vector< std::pair<int, int> > Kqueue::pollEvents() {
+struct kevent* Kqueue::pollEvents() {
 	struct kevent events[maxEvents];
 	struct timespec timeout;
 	struct timespec *timeoutPtr = nullptr;
@@ -57,16 +57,14 @@ std::vector< std::pair<int, int> > Kqueue::pollEvents() {
 	int eventCount = kevent(kqueueFd, nullptr, 0, events, maxEvents, timeoutPtr);
 	if (eventCount == -1) {
 		perror("Error polling kqueue events");
-		return std::vector<std::pair<int, int> >(); // 빈 벡터 반환
+		throw std::runtime_error("Error polling kqueue events");
 	}
-	std::cout << "Event count: " << eventCount << std::endl;
-
-	std::vector< std::pair<int, int> > activeEvents;
-	for (int i = 0; i < eventCount; ++i) {
-		activeEvents.push_back(std::make_pair(events[i].ident, events[i].filter));
-		std::cout << "Event occurred - FD: " << events[i].ident
-				  << ", Filter: " << events[i].filter << std::endl;
+	if (eventCount == 0) {
+		std::cout << "No events to process." << std::endl;
+		return nullptr;
 	}
 
-	return activeEvents;
+	struct kevent* returnEvent = new struct kevent[eventCount];
+	std::copy(events, events + eventCount, returnEvent);
+	return returnEvent;
 }
