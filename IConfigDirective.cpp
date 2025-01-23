@@ -3,7 +3,7 @@
 IConfigDirective::IConfigDirective()
 {}
 
-IConfigDirective::IConfigDirective(IConfigContext *parent, DirectiveType type) : type_(type), parent_(parent)
+IConfigDirective::IConfigDirective(IConfigContext *parent, int type) : type_(type), parent_(parent)
 {
 }
 
@@ -20,7 +20,7 @@ void IConfigDirective::AddValue(std::string value)
 	values_.push_back(value);
 }
 
-DirectiveType IConfigDirective::getType() const
+int IConfigDirective::getType() const
 {
 	return (type_);
 }
@@ -30,24 +30,23 @@ std::vector<std::string> IConfigDirective::getValues() const
 	return (values_);
 }
 
-DirectiveType IsDirective(std::string token)
+int IsDirective(std::string token)
 {
-	std::vector<std::string> DirectiveStrings = {
-		"worker_processes",
-		"error_page",
-		"listen",
-		"server_name",
-		"root",
-		"index",
-		"allow_method",
-		"access_log",
-		"autoindex"
-    };
+	std::vector<std::string> DirectiveStrings;
+	DirectiveStrings.push_back("worker_processes");
+	DirectiveStrings.push_back("error_page");
+	DirectiveStrings.push_back("listen");
+	DirectiveStrings.push_back("server_name");
+	DirectiveStrings.push_back("root");
+	DirectiveStrings.push_back("index");
+	DirectiveStrings.push_back("allow_method");
+	DirectiveStrings.push_back("access_log");
+	DirectiveStrings.push_back("autoindex");
 
-	for (DirectiveType i = WORKER_PROCESSES; i <= DirectiveType::END; i = static_cast<DirectiveType>(i + 1))
+	for (size_t i = 0; i <= DirectiveStrings.size(); ++i)
 	{
 		if (token == DirectiveStrings[static_cast<int>(i)])
 			return (i);
 	}
-	return (END);
+	return (-1);
 }

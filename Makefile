@@ -1,5 +1,5 @@
 CFLAGS = g++ -std=c++98 -Wall -Wextra -Werror
-SRCS = ConfigReader.cpp ConfigParser.cpp main.cpp ConfigData.cpp IConfigContext.cpp
+SRCS = ConfigReader.cpp ConfigParser.cpp main.cpp ConfigData.cpp IConfigContext.cpp IConfigDirective.cpp Http.cpp
 OBJS = $(SRCS:.cpp=.o)
 NAME = webserv
 

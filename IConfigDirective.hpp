@@ -2,6 +2,8 @@
 
 # include "IConfigContext.hpp"
 
+class IConfigContext;
+
 enum DirectiveType
 {
 	WORKER_PROCESSES,
@@ -13,20 +15,19 @@ enum DirectiveType
 	INDEX,
 	ALLODW_METHOD,
 	AUTOINDEX,
-	END
 };
 
 class IConfigDirective
 {
 
 	private:
-		DirectiveType type_;
+		int type_;
 		IConfigContext *parent_;
 		std::vector<std::string> values_;
 		IConfigDirective();
 
 	public:
-		IConfigDirective(IConfigContext *parent, DirectiveType type);
+		IConfigDirective(IConfigContext *parent, int type);
 		~IConfigDirective();
 
 		IConfigContext* getParent() const;
@@ -34,8 +35,8 @@ class IConfigDirective
 		void AddValue(std::string value);
 		std::vector<std::string> getValues() const;
 
-		DirectiveType getType() const;
+		int getType() const;
 };
 
-DirectiveType IsDirective(std::string token);
+int IsDirective(std::string token);
 

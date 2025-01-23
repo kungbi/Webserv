@@ -2,13 +2,14 @@
 
 ConfigData::ConfigData(IConfigContext *root)
 {
-	try {
-		ValidCheck(root);
-	} catch (std::exception &e) {
-		std::cerr << e.what() << std::endl;
-		DeleteTree(root);
-		throw (something);
-	}
+	// try {
+	// 	ValidCheck(root);
+	// } catch (std::exception &e) {
+	// 	std::cerr << e.what() << std::endl;
+	// 	DeleteTree(root);
+	// 	throw ;
+	// }
+	root_ = root;
 }
 
 void ConfigData::ValidCheck(IConfigContext *root)
@@ -16,7 +17,6 @@ void ConfigData::ValidCheck(IConfigContext *root)
 	if (!root)
 		return ;
 
-	IConfigContext *cur = root;
 	std::vector<IConfigContext *> childs = root->getChild();
 	
 	void (ConfigData::*ValidFunctions[])(IConfigContext *node) = {
@@ -47,9 +47,9 @@ void ConfigData::ValidCheck(IConfigContext *root)
 
 void ConfigData::WorkerProcessesDirectiveCheck(IConfigDirective *dir)
 {
-	ContextType parent = dir->getParent()->getType();
+	int parent = dir->getParent()->getType();
 
-	if (parent != ContextType::MAIN)
+	if (parent != MAIN)
 		throw ;
 	
 	std::vector<std::string> tokens = dir->getValues();
@@ -65,9 +65,9 @@ void ConfigData::WorkerProcessesDirectiveCheck(IConfigDirective *dir)
 
 void ConfigData::ErrorPageDirectiveCheck(IConfigDirective *dir)
 {
-	ContextType parent = dir->getParent()->getType();
+	int parent = dir->getParent()->getType();
 
-	if (parent != ContextType::HTTP || parent != ContextType::SERVER || parent != ContextType::LOCATION)
+	if (parent != HTTP && parent != SERVER && parent != LOCATION)
 		throw ;
 	
 	std::vector<std::string> tokens = dir->getValues();
@@ -87,12 +87,18 @@ void ConfigData::ErrorPageDirectiveCheck(IConfigDirective *dir)
 
 void ConfigData::ListenDirectiveCheck(IConfigDirective *dir)
 {
-	ContextType parent = dir->getParent()->getType();
+	int parent = dir->getParent()->getType();
 
-	if (parent != ContextType::SERVER)
+	if (parent != SERVER)
 		throw ;
 	
 	std::vector<std::string> tokens = dir->getValues();
+
+	if (tokens.empty())
+	{
+		tokens.push_back("80");
+		return ;
+	}
 	if (tokens.size() != 1)
 		throw ;
 	// 유효성 검증 어디까지?
@@ -100,9 +106,9 @@ void ConfigData::ListenDirectiveCheck(IConfigDirective *dir)
 
 void ConfigData::ServerNameDirectiveCheck(IConfigDirective *dir)
 {
-	ContextType parent = dir->getParent()->getType();
+	int parent = dir->getParent()->getType();
 
-	if (parent != ContextType::SERVER)
+	if (parent != SERVER)
 		throw ;
 	
 	std::vector<std::string> tokens = dir->getValues();
@@ -114,9 +120,9 @@ void ConfigData::ServerNameDirectiveCheck(IConfigDirective *dir)
 
 void ConfigData::ClientMaxBodySizeDirectiveCheck(IConfigDirective *dir)
 {
-	ContextType parent = dir->getParent()->getType();
+	int parent = dir->getParent()->getType();
 
-	if (parent != ContextType::HTTP || parent != ContextType::SERVER || parent != ContextType::LOCATION)
+	if (parent != HTTP && parent != SERVER && parent != LOCATION)
 		throw ;
 
 	std::vector<std::string> tokens = dir->getValues();
@@ -129,12 +135,11 @@ void ConfigData::ClientMaxBodySizeDirectiveCheck(IConfigDirective *dir)
 		throw ;
 	std::vector<std::string>::iterator token_it = tokens.end();
 	token_it--;
-	std::string::iterator it = (*token_it).begin();
 	std::string::iterator end = (*token_it).end();
 	end--;
 	if ((!isdigit(*end)) && *end != 'm')
 		throw ;
-	for (it; it < end; ++it)
+	for (std::string::iterator it = (*token_it).begin(); it < end; ++it)
 	{
 		if (!isdigit(*it))
 			throw ;
@@ -143,9 +148,9 @@ void ConfigData::ClientMaxBodySizeDirectiveCheck(IConfigDirective *dir)
 
 void ConfigData::RootDirectiveCheck(IConfigDirective *dir)
 {
-	ContextType parent = dir->getParent()->getType();
+	int parent = dir->getParent()->getType();
 
-	if (parent != ContextType::HTTP || parent != ContextType::SERVER || parent != ContextType::LOCATION)
+	if (parent != HTTP && parent != SERVER && parent != LOCATION)
 		throw ;
 
 	std::vector<std::string> tokens = dir->getValues();
@@ -156,38 +161,126 @@ void ConfigData::RootDirectiveCheck(IConfigDirective *dir)
 
 void ConfigData::AllowMethodDirectiveCheck(IConfigDirective *dir)
 {
-	ContextType parent = dir->getParent()->getType();
+	int parent = dir->getParent()->getType();
 
-	if (parent != )
+	if (parent != MAIN) // Allodwmethod   어디에 속할까?
+		throw ;
+
+	std::vector<std::string> tokens = dir->getValues();
+	
+	if (tokens.empty())
+		throw ;
+
+	std::vector<std::string> methods;
+	methods.push_back("connect");
+	methods.push_back("delete");
+	methods.push_back("get");
+	methods.push_back("head");
+	methods.push_back("options");
+	methods.push_back("patch");
+	methods.push_back("post");
+	methods.push_back("put");
+
+	for (size_t i = 0; i < tokens.size(); ++i)
+	{
+		for (size_t j = 0; j < methods.size(); ++j)
+		{
+			if (tokens[i] == methods[j])
+				break ;
+		}
+		if (i == tokens.size())
+			throw ;
+	}
 }
 
-ConfigData::DirectiveCheckFunction ConfigData::getDirectiveCheckFuntion(DirectiveType type)
+void ConfigData::IndexDirectiveCheck(IConfigDirective *dir)
 {
-	if (type == DirectiveType::WORKER_PROCESSES)
-		return ConfigData::WorkerProcessesDirectiveCheck;
-	if (type == DirectiveType::ALLODW_METHOD)
-		return ConfigData::AllowMethodDirectiveCheck;
-	if (type == DirectiveType::ERROR_PAGE)
-		return ConfigData::ErrorPageDirectiveCheck;
-	if (type == DirectiveType::LISTEN)
-		return ConfigData::ListenDirectiveCheck;
-	if (type == DirectiveType::SERVER_NAME)
-		return ConfigData::ServerNameDirectiveCheck;
-	if (type == DirectiveType::CLIENT_MAX_BODY_SIZE)
-		return ConfigData::ClientMaxBodySizeDirectiveCheck;
-	if (type == DirectiveType::ROOT)
-		return ConfigData::RootDirectiveCheck;
-	if (type == DirectiveType::INDEX)
-		return ConfigData::IndexDirectiveCheck;
-	if (type == DirectiveType::AUTOINDEX)
-		return ConfigData::AutoIndexDirectiveCheck;
+	int16_t parent = dir->getParent()->getType();
+
+	if (parent != HTTP && parent != SERVER && parent != LOCATION)
+		throw ;
+
+	std::vector<std::string> tokens = dir->getValues();
+	if (tokens.empty())
+	{
+		tokens.push_back("index.html");
+		return ;
+	}
+	for (size_t i = 0; i < tokens.size(); ++i)
+	{
+		std::string token = tokens[i];
+		for (size_t j = 0; j < token.size(); ++j)
+		{
+			if (token[j] == '/')
+				throw ;
+		}
+	}
+}
+
+void ConfigData::AutoIndexDirectiveCheck(IConfigDirective *dir)
+{
+	int parent = dir->getParent()->getType();
+	if (parent != HTTP && parent != SERVER  && parent != LOCATION)
+		throw ;
+
+	std::vector<std::string> tokens = dir->getValues();
+	if (tokens.empty())
+	{
+		tokens.push_back("off");
+		return ;
+	}
+	if (tokens.size() != 1)
+		throw ;
+	if (tokens[0] != "on" && tokens[0] != "off")
+		throw ;
+}
+
+void ConfigData::ReturnDirectiveCheck(IConfigDirective *dir)
+{
+	int parent = dir->getParent()->getType();
+	if (parent != SERVER && parent != LOCATION)
+		throw ;
+
+	std::vector<std::string> tokens = dir->getValues();
+	if (tokens.empty())
+		throw ;
+	if (tokens.size() > 2)
+		throw ;
+	for (size_t i = 0; i < tokens.size(); ++i)
+	{
+		if (!IsStatusNumber(tokens[i]))
+			throw ;
+	}
+}
+
+ConfigData::DirectiveCheckFunction ConfigData::getDirectiveCheckFuntion(int type)
+{
+	if (type == WORKER_PROCESSES)
+		return &ConfigData::WorkerProcessesDirectiveCheck;
+	if (type == ALLODW_METHOD)
+		return &ConfigData::AllowMethodDirectiveCheck;
+	if (type == ERROR_PAGE)
+		return &ConfigData::ErrorPageDirectiveCheck;
+	if (type == LISTEN)
+		return &ConfigData::ListenDirectiveCheck;
+	if (type == SERVER_NAME)
+		return &ConfigData::ServerNameDirectiveCheck;
+	if (type == CLIENT_MAX_BODY_SIZE)
+		return &ConfigData::ClientMaxBodySizeDirectiveCheck;
+	if (type == ROOT)
+		return &ConfigData::RootDirectiveCheck;
+	if (type == INDEX)
+		return &ConfigData::IndexDirectiveCheck;
+	if (type == AUTOINDEX)
+		return &ConfigData::AutoIndexDirectiveCheck;
+	return NULL;
 }
 
 bool ConfigData::CallDirectiveCheck(std::vector<IConfigDirective *> directives)
 {
 	for (size_t i = 0; i < directives.size(); ++i)
 	{
-		DirectiveType type = directives[i]->getType();
+		int type = directives[i]->getType();
 		ConfigData::DirectiveCheckFunction CheckFunction = getDirectiveCheckFuntion(type);
 		try {
 			(this->*CheckFunction)(directives[i]);
@@ -202,7 +295,7 @@ bool ConfigData::CallDirectiveCheck(std::vector<IConfigDirective *> directives)
 
 void ConfigData::MainContextCheck(IConfigContext *node)
 {
-	if (node->getParent()->getType() != NULL)
+	if (node->getParent() != NULL)
 		throw ;
 
 	std::vector<IConfigDirective *> directives = node->getDirectives();
@@ -212,7 +305,7 @@ void ConfigData::MainContextCheck(IConfigContext *node)
 
 void ConfigData::HttpContextCheck(IConfigContext *node)
 {
-	if (node->getParent()->getType() != ContextType::MAIN)
+	if (node->getParent()->getType() != MAIN)
 		throw ;
 
 	std::vector<IConfigDirective *> directives = node->getDirectives();
@@ -225,7 +318,7 @@ void ConfigData::HttpContextCheck(IConfigContext *node)
 
 void ConfigData::ServerContextCheck(IConfigContext *node)
 {
-	if (node->getParent()->getType() != ContextType::HTTP)
+	if (node->getParent()->getType() != HTTP)
 		throw ;
 
 	std::vector<IConfigDirective *> directives = node->getDirectives();
@@ -237,7 +330,7 @@ void ConfigData::ServerContextCheck(IConfigContext *node)
 
 void ConfigData::EventsContextCheck(IConfigContext *node)
 {
-	if (node->getParent()->getType() != ContextType::MAIN)
+	if (node->getParent()->getType() != MAIN)
 		throw ;
 
 	std::vector<IConfigDirective *> directives = node->getDirectives();
@@ -247,9 +340,9 @@ void ConfigData::EventsContextCheck(IConfigContext *node)
 
 void ConfigData::LocationContextCheck(IConfigContext *node)
 {
-	if (node->getParent()->getType() != ContextType::SERVER)
+	if (node->getParent()->getType() != SERVER)
 		throw ;
-	
+
 	std::vector<IConfigDirective *> directives = node->getDirectives();
 	if (!CallDirectiveCheck(directives))
 		throw ;
@@ -272,49 +365,57 @@ void ConfigData::SearchTree()
 	cur = GetRoot();
 
 	std::vector<IConfigContext *> childs = cur->getChild();
-	std::map<std::string, std::vector<std::string> > cur_dir = cur->getDirectives();
+	std::vector<IConfigDirective *> directives = cur->getDirectives();
 
 	std::cout << "Type : " << cur->getType() << std::endl;
-	for (std::map<std::string, std::vector<std::string> >::iterator it = cur_dir.begin();\
-		it != cur_dir.end(); ++it)
+	for (std::vector<IConfigDirective *>::iterator it = directives.begin(); it < directives.end(); ++it)
 	{
-		for (std::vector<std::string>::iterator str_it = it->second.begin(); str_it != it->second.end(); ++str_it)
+		std::cout << "Directive Type : " << (*it)->getType() << std::endl;
+		std::cout << "Directive Contents : " << std::endl;
+		std::vector<std::string> tokens = (*it)->getValues();
+		for (std::vector<std::string>::iterator token = tokens.begin(); token < tokens.end(); ++token)
 		{
-			std::cout << "key : " << (it->first) << "   " << "value : " << *str_it << std::endl;
+			std::cout << *token << " ";
 		}
 	}
 	cur = childs[0];
-	cur_dir = cur->getDirectives();
+	directives = cur->getDirectives();
 	std::cout << "Type second : " << cur->getType() << std::endl;
-	for (std::map<std::string, std::vector<std::string> >::iterator it = cur_dir.begin();\
-		it != cur_dir.end(); ++it)
+	for (std::vector<IConfigDirective *>::iterator it = directives.begin(); it < directives.end(); ++it)
 	{
-		for (std::vector<std::string>::iterator str_it = it->second.begin(); str_it != it->second.end(); ++str_it)
+		std::cout << "Directive Type : " << (*it)->getType() << std::endl;
+		std::cout << "Directive Contents : " << std::endl;
+		std::vector<std::string> tokens = (*it)->getValues();
+		for (std::vector<std::string>::iterator token = tokens.begin(); token < tokens.end(); ++token)
 		{
-			std::cout << "key : " << (it->first) << "   " << "value : " << *str_it << std::endl;
+			std::cout << *token << " ";
 		}
 	}
 	childs = cur->getChild();
 	cur = childs[0];
-	cur_dir = cur->getDirectives();
+	directives = cur->getDirectives();
 	std::cout << "Type third : " << cur->getType() << std::endl;
-	for (std::map<std::string, std::vector<std::string> >::iterator it = cur_dir.begin();\
-		it != cur_dir.end(); ++it)
+	for (std::vector<IConfigDirective *>::iterator it = directives.begin(); it < directives.end(); ++it)
 	{
-		for (std::vector<std::string>::iterator str_it = it->second.begin(); str_it != it->second.end(); ++str_it)
+		std::cout << "Directive Type : " << (*it)->getType() << std::endl;
+		std::cout << "Directive Contents : " << std::endl;
+		std::vector<std::string> tokens = (*it)->getValues();
+		for (std::vector<std::string>::iterator token = tokens.begin(); token < tokens.end(); ++token)
 		{
-			std::cout << "key : " << (it->first) << "   " << "value : " << *str_it << std::endl;
+			std::cout << *token << " ";
 		}
 	}
 	cur = childs[1];
-	cur_dir = cur->getDirectives();
+	directives = cur->getDirectives();
 	std::cout << "Type third : " << cur->getType() << std::endl;
-	for (std::map<std::string, std::vector<std::string> >::iterator it = cur_dir.begin();\
-		it != cur_dir.end(); ++it)
+	for (std::vector<IConfigDirective *>::iterator it = directives.begin(); it < directives.end(); ++it)
 	{
-		for (std::vector<std::string>::iterator str_it = it->second.begin(); str_it != it->second.end(); ++str_it)
+		std::cout << "Directive Type : " << (*it)->getType() << std::endl;
+		std::cout << "Directive Contents : " << std::endl;
+		std::vector<std::string> tokens = (*it)->getValues();
+		for (std::vector<std::string>::iterator token = tokens.begin(); token < tokens.end(); ++token)
 		{
-			std::cout << "key : " << (it->first) << "   " << "value : " << *str_it << std::endl;
+			std::cout << *token << " ";
 		}
 	}
 	childs = cur->getChild();
@@ -323,13 +424,13 @@ void ConfigData::SearchTree()
 	return ;
 }	
 
-void ConfigData::SearchTreetest(IConfigContext *root)
-{
-	IConfigContext *cur = root_;
-	std::vector<IConfigContext *> childs = cur->getChild();
+// void ConfigData::SearchTreetest(IConfigContext *root)
+// {
+// 	IConfigContext *cur = root_;
+// 	std::vector<IConfigContext *> childs = cur->getChild();
 
-	while (!childs.empty())
-	{
+// 	while (!childs.empty())
+// 	{
 		
-	}
-}
+// 	}
+// }

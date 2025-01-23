@@ -1,6 +1,6 @@
 #include "IConfigContext.hpp"
 
-IConfigContext::IConfigContext(IConfigContext *parent, ContextType type) : parent_(parent), type_(type)
+IConfigContext::IConfigContext(IConfigContext *parent, int type) : parent_(parent), type_(type)
 {
 	if (parent)
 	{
@@ -46,14 +46,13 @@ bool IConfigContext::IsValid() const
 	return (true);
 }
 
-ContextType IConfigContext::getType() const
+int IConfigContext::getType() const
 {
 	return (type_);
 }
 
 void DeleteTree(IConfigContext *root)
 {
-	IConfigContext *cur = root;
 	std::vector<IConfigContext *> childs = root->getChild();
 
 	if (!root)

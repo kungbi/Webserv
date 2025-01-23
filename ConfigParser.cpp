@@ -36,8 +36,9 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 	}
 	while (it != tokens.end())
 	{
-		ContextType contextType = IsContext(*it);
-		if (contextType != ContextType::END)
+		int contextType = IsContext(*it);
+		int directiveType = IsDirective(*it);
+		if (contextType != -1 && directiveType == -1)
 		{
 			if (*(++it) != "{") {
 				throw (ConfigParser::ConfigSyntaxError());
@@ -73,8 +74,7 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 				throw (ConfigParser::ConfigSyntaxError());
 			}
 		}
-		DirectiveType directiveType = IsDirective(*it);
-		if (directiveType != DirectiveType::END)
+		else if (directiveType != -1 && contextType == -1)
 		{
 			//*it = 지시어 토큰
 			if (it == last_it)
@@ -98,29 +98,28 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 			}
 			parent->AddDirectives(directive);
 		}
-		else {
+		else if (directiveType == -1 && contextType == -1) {
 			throw (ConfigParser::ConfigSyntaxError());
 		}
 		++it;
 	}
 }
 
-ContextType IsContext(std::string token)
+int IsContext(std::string token)
 {
-	std::vector<std::string> ContextStrings = {
-		"main",
-		"http",
-		"server",
-		"events",
-		"location",
-	};
+	std::vector<std::string> ContextStrings;
+	ContextStrings.push_back("main");
+	ContextStrings.push_back("http");
+	ContextStrings.push_back("server");
+	ContextStrings.push_back("events");
+	ContextStrings.push_back("location");
 
-	for (ContextType i = MAIN; i < ContextType::END; i = static_cast<ContextType>(i + 1))
+	for (size_t i = 0; i < ContextStrings.size(); ++i)
 	{
-		if (token == ContextStrings[static_cast<int>(i)])
+		if (token == ContextStrings[i])
 			return (i);
 	}
-	return (ContextType::END);
+	return (-1);
 }
 
 const char* ConfigParser::ConfigSyntaxError::what() const throw()
