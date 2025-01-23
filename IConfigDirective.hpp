@@ -15,6 +15,9 @@ enum DirectiveType
 	INDEX,
 	ALLODW_METHOD,
 	AUTOINDEX,
+	FASTCGI_PASS,
+	FASTCGI_INDEX,
+	FASTCGI_PARAM,
 };
 
 class IConfigDirective

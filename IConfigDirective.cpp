@@ -42,6 +42,9 @@ int IsDirective(std::string token)
 	DirectiveStrings.push_back("allow_method");
 	DirectiveStrings.push_back("access_log");
 	DirectiveStrings.push_back("autoindex");
+	DirectiveStrings.push_back("fastcgi_pass");
+	DirectiveStrings.push_back("fastcgi_index");
+	DirectiveStrings.push_back("fastcgi_param");
 
 	for (size_t i = 0; i <= DirectiveStrings.size(); ++i)
 	{
