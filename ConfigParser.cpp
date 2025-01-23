@@ -40,17 +40,24 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 		int directiveType = IsDirective(*it);
 		if (contextType != -1 && directiveType == -1)
 		{
-			if (*(++it) != "{") {
+			if (it == last_it) {
 				throw (ConfigParser::ConfigSyntaxError());
 			}
+			++it;
 
-			if (it == last_it) {
+			IConfigContext* node = new IConfigContext(parent, contextType);
+			while (it != tokens.end() && *it != "{")
+			{
+				node->AddOptions(*it);
+				++it;
+			}
+
+			if (it == tokens.end()) {
 				throw (ConfigParser::ConfigSyntaxError());
 			}
 
 			int BracketCount = 1;
 			std::vector<std::string> SubTokens;
-			IConfigContext* node = new IConfigContext(parent, contextType);
 			
 			while (it != tokens.end())
 			{
@@ -120,6 +127,11 @@ int IsContext(std::string token)
 			return (i);
 	}
 	return (-1);
+}
+
+void IConfigContext::AddOptions(std::string token)
+{
+	options_.push_back(token);
 }
 
 const char* ConfigParser::ConfigSyntaxError::what() const throw()

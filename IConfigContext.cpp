@@ -68,3 +68,8 @@ void DeleteTree(IConfigContext *root)
 		delete directives[i];
 	}
 }
+
+std::vector<std::string> IConfigContext::getOptions() const
+{
+	return (options_);
+}

@@ -24,6 +24,7 @@ class IConfigContext
 		int	type_;
 		std::vector<IConfigContext *> child_;
 		std::vector<IConfigDirective *> directives_;
+		std::vector<std::string> options_;
 
 		void	AddChild(IConfigContext *child);
 	public:
@@ -35,8 +36,10 @@ class IConfigContext
 		
 		IConfigContext* getParent() const;
 		std::vector<IConfigContext *> getChild() const;
+		std::vector<std::string> getOptions() const;
 
 		void	AddDirectives(IConfigDirective *directive);
+		void	AddOptions(std::string token);
 		std::vector<IConfigDirective *> getDirectives() const;
 
 };
