@@ -11,7 +11,7 @@
 
 class Webserver {
 private:
-	Kqueue kqueueManager;
+	Kqueue kqueue;
 	Servers servers;
 
 	void initializeServers(const WebserverConfig& config);
