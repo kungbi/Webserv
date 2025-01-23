@@ -13,5 +13,4 @@ class ConfigData
 		ConfigData(IConfigContext *root);
 		~ConfigData(); // 트리 전부 삭제.
 		IConfigContext *GetRoot();
-		void SearchTree();
 };
