@@ -21,9 +21,25 @@ Kqueue::~Kqueue() {
 	}
 }
 
-void Kqueue::addFd(int fd, int filter, int flags) {
+int Kqueue::getFilter(int eventType) {
+	if (eventType == SERVER) {
+		return EVFILT_READ;
+	}
+	if (eventType == REQUEST) {
+		return EVFILT_READ;
+	}
+	if (eventType == RESPONSE) {
+		return EVFILT_WRITE;
+	}
+	throw std::runtime_error("Invalid event type");
+}
+
+void Kqueue::addEvent(int fd, int eventType, Server& server) {
+	int filter = getFilter(eventType);
 	struct kevent event;
-	EV_SET(&event, fd, filter, flags, 0, 0, nullptr);
+	EventInfo* eventInfo = new EventInfo(eventType, server);
+
+	EV_SET(&event, fd, filter, EV_ADD | EV_ENABLE, 0, 0, eventInfo);
 	if (kevent(kqueueFd, &event, 1, nullptr, 0, nullptr) == -1) {
 		perror("Failed to add FD to kqueue");
 	} else {
@@ -31,7 +47,7 @@ void Kqueue::addFd(int fd, int filter, int flags) {
 	}
 }
 
-void Kqueue::removeFd(int fd, int filter) {
+void Kqueue::removeEvent(int fd, int filter) {
 	struct kevent event;
 	EV_SET(&event, fd, filter, EV_DELETE, 0, 0, nullptr);
 	if (kevent(kqueueFd, &event, 1, nullptr, 0, nullptr) == -1) {
@@ -43,7 +59,7 @@ void Kqueue::removeFd(int fd, int filter) {
 
 static const int TIMEOUT_MS = -1;
 
-std::vector< std::pair<int, int> > Kqueue::pollEvents() {
+struct kevent* Kqueue::pollEvents() {
 	struct kevent events[maxEvents];
 	struct timespec timeout;
 	struct timespec *timeoutPtr = nullptr;
@@ -57,16 +73,14 @@ std::vector< std::pair<int, int> > Kqueue::pollEvents() {
 	int eventCount = kevent(kqueueFd, nullptr, 0, events, maxEvents, timeoutPtr);
 	if (eventCount == -1) {
 		perror("Error polling kqueue events");
-		return std::vector<std::pair<int, int> >(); // 빈 벡터 반환
+		throw std::runtime_error("Error polling kqueue events");
 	}
-	std::cout << "Event count: " << eventCount << std::endl;
-
-	std::vector< std::pair<int, int> > activeEvents;
-	for (int i = 0; i < eventCount; ++i) {
-		activeEvents.push_back(std::make_pair(events[i].ident, events[i].filter));
-		std::cout << "Event occurred - FD: " << events[i].ident
-				  << ", Filter: " << events[i].filter << std::endl;
+	if (eventCount == 0) {
+		std::cout << "No events to process." << std::endl;
+		return nullptr;
 	}
 
-	return activeEvents;
+	struct kevent* returnEvent = new struct kevent[eventCount];
+	std::copy(events, events + eventCount, returnEvent);
+	return returnEvent;
 }

@@ -11,15 +11,15 @@
 
 class Webserver {
 private:
-	Kqueue kqueueManager;
+	Kqueue kqueue;
 	Servers servers;
 
 	void initializeServers(const WebserverConfig& config);
-	void registerFd(int clientFd);
 	void handleServerSocketEvent(int fd);
 	void handleClientRequest(int fd);
-	void processEvents(const std::vector< std::pair<int, int> >& events);
-	void processReadEvent(int fd);
+	void processEvents(struct kevent& event);
+	void connectClient(struct kevent& event);
+	void processClientRequest(struct kevent& event);
 
 public:
 	Webserver(const WebserverConfig& config);
