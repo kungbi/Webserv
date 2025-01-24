@@ -46,7 +46,7 @@ void Kqueue::addEvent(int fd, int eventType, Server& server) {
 	}
 }
 
-void Kqueue::removeFd(int fd, int filter) {
+void Kqueue::removeEvent(int fd, int filter) {
 	struct kevent event;
 	EV_SET(&event, fd, filter, EV_DELETE, 0, 0, nullptr);
 	if (kevent(kqueueFd, &event, 1, nullptr, 0, nullptr) == -1) {

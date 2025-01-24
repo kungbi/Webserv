@@ -27,7 +27,7 @@ public:
 	~Kqueue();
 
 	void addEvent(int fd, int eventType, Server& server);
-	void removeFd(int fd, int filter);
+	void removeEvent(int fd, int filter);
 	struct kevent* pollEvents();
 };
 

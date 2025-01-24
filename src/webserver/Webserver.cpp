@@ -31,7 +31,7 @@ void Webserver::handleServerSocketEvent(int fd) {
 void Webserver::handleClientRequest(int fd) {
 	servers.handleRequest(fd);
 	
-	kqueue.removeFd(fd, EVFILT_READ);
+	kqueue.removeEvent(fd, EVFILT_READ);
 	close(fd);
 	std::cout << "Connection closed for FD: " << fd << std::endl;
 }
@@ -61,12 +61,12 @@ void Webserver::processReadEvent(int fd) {
 		} else if (bytesRead == 0) {
 			// 클라이언트가 연결을 닫은 경우
 			std::cout << "Client disconnected on FD: " << fd << std::endl;
-			kqueue.removeFd(fd, EVFILT_READ); // Kqueue에서 제거
+			kqueue.removeEvent(fd, EVFILT_READ); // Kqueue에서 제거
 			close(fd); // 소켓 닫기
 		} else {
 			// 읽기 실패 (에러 처리)
 			perror("Error reading from FD");
-			kqueue.removeFd(fd, EVFILT_READ); // Kqueue에서 제거
+			kqueue.removeEvent(fd, EVFILT_READ); // Kqueue에서 제거
 			close(fd); // 소켓 닫기
 		}
 	}
