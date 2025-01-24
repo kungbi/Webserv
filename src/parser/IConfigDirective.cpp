@@ -45,6 +45,9 @@ int IsDirective(std::string token)
 	DirectiveStrings.push_back("fastcgi_pass");
 	DirectiveStrings.push_back("fastcgi_index");
 	DirectiveStrings.push_back("fastcgi_param");
+	DirectiveStrings.push_back("client_max_body_size");
+	DirectiveStrings.push_back("return");
+	DirectiveStrings.push_back("include");
 
 	for (size_t i = 0; i <= DirectiveStrings.size(); ++i)
 	{

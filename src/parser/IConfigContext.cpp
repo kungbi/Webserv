@@ -53,20 +53,20 @@ int IConfigContext::getType() const
 
 void DeleteTree(IConfigContext *root)
 {
-	std::vector<IConfigContext *> childs = root->getChild();
-
 	if (!root)
 		return ;
+	std::vector<IConfigContext *> childs = root->getChild();
+
 	for (size_t i = 0; i < childs.size(); ++i)
 	{
 		DeleteTree(childs[i]);
 	}
-	delete (root);
 	std::vector<IConfigDirective *> directives = root->getDirectives();
 	for (size_t i = 0; i < directives.size(); ++i)
 	{
 		delete directives[i];
 	}
+	delete (root);
 }
 
 std::vector<std::string> IConfigContext::getOptions() const
