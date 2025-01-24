@@ -22,8 +22,8 @@ typedef struct EventInfo {
 
 class Kqueue {
 private:
-	int kqueueFd;
-	int maxEvents;
+	int kqueueFd_;
+	int maxEvents_;
 
 	void initialize();
 	int getFilter(int eventType);

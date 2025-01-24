@@ -1,16 +1,16 @@
 #include "Server.hpp"
 
 Server::Server(Socket& serverSocket, ServerConfig& serverConfig, Kqueue& kqueue)
-	: serverSocket(serverSocket), serverConfig(serverConfig), kqueue(kqueue) {
+	: serverSocket_(serverSocket), serverConfig_(serverConfig), kqueue_(kqueue) {
 	std::cout << "Server initialized at " << serverConfig.getServerName() << ":" << serverConfig.getPort() << std::endl;
 }
 
 int Server::getSocketFd() const {
-	return serverSocket.getSocketFd();
+	return serverSocket_.getSocketFd();
 }
 
 int Server::acceptClient() {
-	return serverSocket.acceptConnection(); // 클라이언트 요청을 수락하고 FD 반환
+	return serverSocket_.acceptConnection(); // 클라이언트 요청을 수락하고 FD 반환
 }
 
 int Server::handleRequest(int clientFd) {

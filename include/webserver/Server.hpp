@@ -9,9 +9,9 @@
 
 class Server {
 private:
-	Socket& serverSocket;
-	ServerConfig& serverConfig;
-	Kqueue& kqueue;
+	Socket& serverSocket_;
+	ServerConfig& serverConfig_;
+	Kqueue& kqueue_;
 
 public:
 	Server(Socket &serverSocket, ServerConfig& serverConfig, Kqueue& kqueue);

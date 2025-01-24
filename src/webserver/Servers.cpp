@@ -1,10 +1,10 @@
 #include "Servers.hpp"
 
-Servers::Servers(Kqueue& kqueue): kqueue(kqueue) {}
+Servers::Servers(Kqueue& kqueue): kqueue_(kqueue) {}
 
 Servers::~Servers() {
-	for (size_t i = 0; i < serverList.size(); ++i) {
-		delete serverList[i]; // 서버 객체 삭제
+	for (size_t i = 0; i < servers_.size(); ++i) {
+		delete servers_[i]; // 서버 객체 삭제
 	}
 }
 
@@ -13,15 +13,15 @@ Server* Servers::createServer(Socket& socket, ServerConfig& config, Kqueue& kque
 }
 
 void Servers::addServer(Server &server) {
-	serverList.push_back(&server);
+	servers_.push_back(&server);
 }
 
 bool Servers::isServerSocketFd(int fd) {
 	std::cout << "Checking for FD: " << fd << std::endl;
 
-	for (size_t i = 0; i < serverList.size(); ++i) {
-		std::cout << "Server FD: " << serverList[i]->getSocketFd() << std::endl;
-		if (serverList[i]->getSocketFd() == fd) {
+	for (size_t i = 0; i < servers_.size(); ++i) {
+		std::cout << "Server FD: " << servers_[i]->getSocketFd() << std::endl;
+		if (servers_[i]->getSocketFd() == fd) {
 			return true;
 		}
 	}
@@ -30,10 +30,10 @@ bool Servers::isServerSocketFd(int fd) {
 
 Server* Servers::getServerForSocketFd(int fd) {
 	std::cout << "Getting server for FD: " << fd << std::endl;
-	for (size_t i = 0; i < serverList.size(); ++i) {
-		std::cout << "Server FD: " << serverList[i]->getSocketFd() << std::endl;
-		if (serverList[i]->getSocketFd() == fd) {
-			return serverList[i];
+	for (size_t i = 0; i < servers_.size(); ++i) {
+		std::cout << "Server FD: " << servers_[i]->getSocketFd() << std::endl;
+		if (servers_[i]->getSocketFd() == fd) {
+			return servers_[i];
 		}
 	}
 	return nullptr;
@@ -51,14 +51,14 @@ void Servers::handleRequest(int fd) {
 }
 
 size_t Servers::size() const {
-	return serverList.size();
+	return servers_.size();
 }
 
 Server& Servers::getServer(size_t index) {
-	if (index >= serverList.size()) {
+	if (index >= servers_.size()) {
 		throw std::out_of_range("Server index out of range.");
 	}
-	return *serverList[index];
+	return *servers_[index];
 }
 
 int Servers::connectClient(int serverFd) {
@@ -81,7 +81,7 @@ int Servers::processRequest(int serverFd, int clientFd) {
 	}
 
 	int result = server->handleRequest(clientFd);
-	kqueue.removeEvent(clientFd, EVFILT_READ);
+	kqueue_.removeEvent(clientFd, EVFILT_READ);
 	close(clientFd);
 
 	return result;
