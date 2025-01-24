@@ -37,8 +37,9 @@ int Kqueue::getFilter(int eventType) {
 void Kqueue::addEvent(int fd, int eventType, Server& server) {
 	int filter = getFilter(eventType);
 	struct kevent event;
+	EventInfo* eventInfo = new EventInfo(eventType, server);
 
-	EV_SET(&event, fd, filter, EV_ADD | EV_ENABLE, 0, 0, &server);
+	EV_SET(&event, fd, filter, EV_ADD | EV_ENABLE, 0, 0, eventInfo);
 	if (kevent(kqueueFd, &event, 1, nullptr, 0, nullptr) == -1) {
 		perror("Failed to add FD to kqueue");
 	} else {

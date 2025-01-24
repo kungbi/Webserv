@@ -1,5 +1,8 @@
 #include "Webserver.hpp"
 
+Webserver::Webserver(const WebserverConfig& config): kqueue(config.getWorkerConnections()) {
+	initializeServers(config);
+}
 void Webserver::initializeServers(const WebserverConfig& config) {
 	HTTPConfig& httpConfig = config.getHTTPConfig();
 
@@ -11,7 +14,6 @@ void Webserver::initializeServers(const WebserverConfig& config) {
 		servers.addServer(*server);
 	}
 }
-
 
 void Webserver::handleServerSocketEvent(int fd) {
 	Server* server = servers.getServerForSocketFd(fd);
@@ -36,45 +38,48 @@ void Webserver::handleClientRequest(int fd) {
 	std::cout << "Connection closed for FD: " << fd << std::endl;
 }
 
+void Webserver::connectClient(struct kevent& event) {
+	Server &server = ((EventInfo *) event.udata)->server;
+
+	int clientFd = server.acceptClient();
+
+	if (clientFd == -1)  {
+		throw std::runtime_error("Failed to accept client");
+	}
+
+	kqueue.addEvent(clientFd, REQUEST, server);
+}
+
+void Webserver::processClientRequest(struct kevent& event) {
+	Server &server = ((EventInfo *) event.udata)->server;
+	int clientFd = event.ident;
+
+	server.handleRequest(clientFd);
+
+	// kqueue.removeEvent(clientFd, EVFILT_READ);
+	// close(clientFd);
+}
+
 void Webserver::processEvents(struct kevent& event) {
 	int fd = event.ident;
 	int filter = event.filter;
+	EventInfo* eventInfo = (EventInfo *) event.udata;
 
-	if (filter == EVFILT_READ) {
-		processReadEvent(fd); // READ 이벤트 처리
+	std::cout << "Processing event for FD: " << fd << std::endl;
+
+	if (eventInfo->type == SERVER) {
+		connectClient(event);
+	}
+
+	if (eventInfo->type == REQUEST) {
+		processClientRequest(event);
+	}
+
+	if (eventInfo->type == RESPONSE) {
+		// processWriteEvent(fd); // WRITE 이벤트 처리
 	}
 }
 
-void Webserver::processReadEvent(int fd) {
-	if (servers.isServerSocketFd(fd)) {
-		handleServerSocketEvent(fd); // 서버 소켓 이벤트 처리
-	} else {
-		// 클라이언트 요청 처리
-		char buffer[1024];
-		ssize_t bytesRead = recv(fd, buffer, sizeof(buffer) - 1, 0);
-
-		if (bytesRead > 0) {
-			buffer[bytesRead] = '\0'; // Null-terminate for safety
-			std::cout << "Received: " << buffer << " from FD: " << fd << std::endl;
-
-			handleClientRequest(fd); // 요청 처리 (예: HTTP 응답)
-		} else if (bytesRead == 0) {
-			// 클라이언트가 연결을 닫은 경우
-			std::cout << "Client disconnected on FD: " << fd << std::endl;
-			kqueue.removeEvent(fd, EVFILT_READ); // Kqueue에서 제거
-			close(fd); // 소켓 닫기
-		} else {
-			// 읽기 실패 (에러 처리)
-			perror("Error reading from FD");
-			kqueue.removeEvent(fd, EVFILT_READ); // Kqueue에서 제거
-			close(fd); // 소켓 닫기
-		}
-	}
-}
-
-Webserver::Webserver(const WebserverConfig& config): kqueue(config.getWorkerConnections()) {
-	initializeServers(config);
-}
 
 void Webserver::start() {
 	std::cout << "Webserver started." << std::endl;
@@ -82,6 +87,8 @@ void Webserver::start() {
 	while (true) {
 		struct kevent* event = kqueue.pollEvents();
 		processEvents(*event); // 이벤트 처리
+
+		// delete event->udata;
 		delete event; // 메모리 해제
 	}
 }

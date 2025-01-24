@@ -15,7 +15,7 @@ public:
 	Server(const ServerConfig& config);
 	int getSocketFd() const;
 	int acceptClient();
-	void handleRequest(int clientFd);
+	int handleRequest(int clientFd);
 };
 
 

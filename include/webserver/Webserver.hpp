@@ -18,7 +18,8 @@ private:
 	void handleServerSocketEvent(int fd);
 	void handleClientRequest(int fd);
 	void processEvents(struct kevent& event);
-	void processReadEvent(int fd);
+	void connectClient(struct kevent& event);
+	void processClientRequest(struct kevent& event);
 
 public:
 	Webserver(const WebserverConfig& config);

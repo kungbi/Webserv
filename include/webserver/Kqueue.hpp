@@ -14,6 +14,13 @@ enum EVENT_TYPE {
 	RESPONSE
 };
 
+typedef struct EventInfo {
+	int type;
+	Server& server;
+
+	EventInfo(int type, Server& server) : type(type), server(server) {}
+} EventInfo;
+
 class Kqueue {
 private:
 	int kqueueFd;
