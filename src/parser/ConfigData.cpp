@@ -12,7 +12,7 @@ ConfigData::ConfigData(IConfigContext *root)
 
 ConfigData::~ConfigData()
 {
-	// DeleteTree(root_);
+	DeleteTree(root_);
 }
 
 IConfigContext* ConfigData::GetRoot()
