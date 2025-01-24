@@ -11,18 +11,16 @@
 
 class Webserver {
 private:
-	Kqueue kqueue;
-	Servers servers;
+	Kqueue& kqueue;
+	Servers& servers;
+	WebserverConfig& config;
 
-	void initializeServers(const WebserverConfig& config);
-	void handleServerSocketEvent(int fd);
-	void handleClientRequest(int fd);
 	void processEvents(struct kevent& event);
 	void connectClient(struct kevent& event);
 	void processClientRequest(struct kevent& event);
 
 public:
-	Webserver(const WebserverConfig& config);
+	Webserver(Kqueue& kqueue, Servers& servers, WebserverConfig& config);
 	void start();
 };
 

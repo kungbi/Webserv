@@ -6,7 +6,6 @@
 # include <sys/event.h>
 # include <sys/types.h>
 # include <unistd.h>
-# include "Server.hpp"
 
 enum EVENT_TYPE {
 	SERVER,
@@ -16,9 +15,9 @@ enum EVENT_TYPE {
 
 typedef struct EventInfo {
 	int type;
-	Server& server;
+	int serverFd;
 
-	EventInfo(int type, Server& server) : type(type), server(server) {}
+	EventInfo(int type, int serverFd) : type(type), serverFd(serverFd) {}
 } EventInfo;
 
 class Kqueue {
@@ -33,7 +32,7 @@ public:
 	Kqueue(int maxEvents);
 	~Kqueue();
 
-	void addEvent(int fd, int eventType, Server& server);
+	void addEvent(int fd, int eventType, int serverFd);
 	void removeEvent(int fd, int filter);
 	struct kevent* pollEvents();
 };

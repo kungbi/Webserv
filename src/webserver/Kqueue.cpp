@@ -34,10 +34,10 @@ int Kqueue::getFilter(int eventType) {
 	throw std::runtime_error("Invalid event type");
 }
 
-void Kqueue::addEvent(int fd, int eventType, Server& server) {
+void Kqueue::addEvent(int fd, int eventType, int serverFd) {
 	int filter = getFilter(eventType);
 	struct kevent event;
-	EventInfo* eventInfo = new EventInfo(eventType, server);
+	EventInfo* eventInfo = new EventInfo(eventType, serverFd);
 
 	EV_SET(&event, fd, filter, EV_ADD | EV_ENABLE, 0, 0, eventInfo);
 	if (kevent(kqueueFd, &event, 1, nullptr, 0, nullptr) == -1) {

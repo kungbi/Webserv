@@ -1,9 +1,8 @@
 #include "Server.hpp"
 
-Server::Server(const ServerConfig& config)
-	: serverSocket("127.0.0.1", config.getPort()),
-	  serverConfig(config) {
-	std::cout << "Server initialized at " << "127.0.0.1" << ":" << serverConfig.getPort() << std::endl;
+Server::Server(Socket& serverSocket, ServerConfig& serverConfig, Kqueue& kqueue)
+	: serverSocket(serverSocket), serverConfig(serverConfig), kqueue(kqueue) {
+	std::cout << "Server initialized at " << serverConfig.getServerName() << ":" << serverConfig.getPort() << std::endl;
 }
 
 int Server::getSocketFd() const {
@@ -18,7 +17,7 @@ int Server::handleRequest(int clientFd) {
 	std::cout << "Handling request for client FD: " << clientFd << std::endl;
 
 	// 클라이언트 요청 처리
-	char buffer[1024];
+	char buffer[1025];
 	ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
 	std::cout << "Bytes read: " << bytesRead << std::endl;
 
@@ -32,8 +31,8 @@ int Server::handleRequest(int clientFd) {
 			"Connection: close\r\n"
 			"\r\n"
 			"Hello World\n";
-
-		send(clientFd, response, strlen(response), 0); // 클라이언트에게 응답
+		send(clientFd, response, strlen(response), 0);
+		return 0;
 	} else if (bytesRead == 0) {
 		// 클라이언트가 연결을 닫은 경우
 		std::cout << "Client disconnected on FD: " << clientFd << std::endl;
@@ -45,5 +44,5 @@ int Server::handleRequest(int clientFd) {
 		// kqueue.removeEvent(clientFd, EVFILT_READ); // Kqueue에서 제거
 		close(clientFd); // 소켓 닫기
 	}
-	return 0;
+	return 1;
 }
