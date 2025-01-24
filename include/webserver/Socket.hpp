@@ -11,8 +11,8 @@
 
 class Socket {
 private:
-	int socketFd;
-	struct sockaddr_in address;
+	int socketFd_;
+	struct sockaddr_in address_;
 
 	void setSocketOptions();
 	void bindSocket();

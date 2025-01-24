@@ -1,24 +1,24 @@
 #include "Webserver.hpp"
 
 Webserver::Webserver(Kqueue& kqueue, Servers& servers, WebserverConfig& config)
-	: kqueue(kqueue), servers(servers), config(config) {}
+	: kqueue_(kqueue), servers_(servers), config_(config) {}
 	
 void Webserver::connectClient(struct kevent& event) {
 	int serverFd = ((EventInfo *) event.udata)->serverFd;
-	int clientFd = servers.connectClient(serverFd);
+	int clientFd = servers_.connectClient(serverFd);
 
 	if (clientFd == -1)  {
 		throw std::runtime_error("Failed to accept client");
 	}
 
-	kqueue.addEvent(clientFd, REQUEST, serverFd);
+	kqueue_.addEvent(clientFd, REQUEST, serverFd);
 }
 
 void Webserver::processClientRequest(struct kevent& event) {
 	int serverFd = ((EventInfo *) event.udata)->serverFd;
 	int clientFd = event.ident;
 
-	servers.processRequest(serverFd, clientFd);
+	servers_.processRequest(serverFd, clientFd);
 }
 
 void Webserver::processEvents(struct kevent& event) {
@@ -47,7 +47,7 @@ void Webserver::start() {
 	std::cout << "Webserver started." << std::endl << std::endl;
 
 	while (true) {
-		struct kevent* event = kqueue.pollEvents();
+		struct kevent* event = kqueue_.pollEvents();
 		processEvents(*event); // 이벤트 처리
 		std::cout << "================" << std::endl;
 

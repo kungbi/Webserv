@@ -11,9 +11,9 @@
 
 class Webserver {
 private:
-	Kqueue& kqueue;
-	Servers& servers;
-	WebserverConfig& config;
+	Kqueue& kqueue_;
+	Servers& servers_;
+	WebserverConfig& config_;
 
 	void processEvents(struct kevent& event);
 	void connectClient(struct kevent& event);

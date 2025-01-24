@@ -10,8 +10,8 @@
 
 class Servers {
 private:
-	std::vector<Server*> serverList; // 서버 리스트 (raw pointer)
-	Kqueue& kqueue;
+	std::vector<Server*> servers_; // 서버 리스트 (raw pointer)
+	Kqueue& kqueue_;
 
 public:
 	Servers(Kqueue& kqueue);
