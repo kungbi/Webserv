@@ -6,22 +6,27 @@
 # include <map>
 # include <string>
 # include "Server.hpp"
+# include "Kqueue.hpp"
 
 class Servers {
 private:
 	std::vector<Server*> serverList; // 서버 리스트 (raw pointer)
+	Kqueue& kqueue;
 
 public:
-	Servers();
+	Servers(Kqueue& kqueue);
 	~Servers();
 
-	Server* createServer(const ServerConfig& config);
+	Server* createServer(Socket& socket, ServerConfig& config, Kqueue& kqueue);
 	void addServer(Server &server);
 	bool isServerSocketFd(int fd);
 	Server* getServerForSocketFd(int fd);
 	void handleRequest(int fd);
 	size_t size() const;
 	Server& getServer(size_t index);
+
+	int connectClient(int serverFd);
+	int processRequest(int serverFd, int clientFd);
 };
 
 
