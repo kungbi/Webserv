@@ -11,8 +11,8 @@ void ConfigParser::Tokenize(std::string config_data)
 	}
 }
 
-IConfigContext* ConfigParser::Parser()
-{
+IConfigContext* ConfigParser::Parser() {
+
 	IConfigContext *root = new IConfigContext(NULL, MAIN);
 
 	try {
@@ -34,6 +34,7 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 	if (it == last_it) {
 		throw (ConfigParser::ConfigSyntaxError());
 	}
+
 	while (it != tokens.end())
 	{
 		int contextType = IsContext(*it);
@@ -90,7 +91,6 @@ void	ConfigParser::ParserRecursive(std::vector<std::string> tokens, IConfigConte
 			std::string DirectiveStr = *it;
 			IConfigDirective *directive = new IConfigDirective(parent, directiveType);
 			++it;
-
 			while (it != tokens.end() && *it != ";")
 			{
 				std::string::iterator TokenIterEnd = it->end();

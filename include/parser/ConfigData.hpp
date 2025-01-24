@@ -13,4 +13,11 @@ class ConfigData
 		ConfigData(IConfigContext *root);
 		~ConfigData(); // 트리 전부 삭제.
 		IConfigContext *GetRoot();
+		void PrintData(IConfigContext *parent);
+
+	class ConfigDataError : public std::exception
+	{
+		public:
+			virtual const char* what() const throw();
+	};
 };
