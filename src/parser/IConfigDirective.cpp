@@ -34,6 +34,7 @@ int IsDirective(std::string token)
 {
 	std::vector<std::string> DirectiveStrings;
 	DirectiveStrings.push_back("worker_processes");
+	DirectiveStrings.push_back("worker_connections");
 	DirectiveStrings.push_back("error_page");
 	DirectiveStrings.push_back("listen");
 	DirectiveStrings.push_back("server_name");

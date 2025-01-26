@@ -1,8 +1,8 @@
 #pragma once
 
 # include "IConfigContext.hpp"
-# include "HTTPConfig.cpp"
 # include "ServerConfig.hpp"
+# include "HTTPConfig.hpp"
 # include "WebserverConfig.hpp"
 
 class IConfigContext;
@@ -18,4 +18,4 @@ class Adapter
 	
 	public:
 		WebserverConfig* Adapt(IConfigContext *root);
-}
+};
