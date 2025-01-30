@@ -15,6 +15,7 @@ class Adapter
 		~Adapter();
 		bool CheckContextDependency(IConfigContext *node);
 		bool CheckDirectiveDependency(IConfigDirective *dir);
+		WebserverConfig AdapterRucrusive(IConfigContext *root);
 	
 	public:
 		WebserverConfig* Adapt(IConfigContext *root);

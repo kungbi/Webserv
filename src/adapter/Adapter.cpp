@@ -15,9 +15,22 @@ WebserverConfig* Adapter::Adapt(IConfigContext *root)
 	{
 		if (directives[i]->getType() == WORKER_CONNECTIONS)
 		{
-
+			std::vector<std::string> values = directives[i]->getValues();
+			workerConnections = std::atoi(values[0].c_str());
+			break ;
 		}
 	}
+
+	try {
+		WebserverConfig *webServerConfig = new WebserverConfig(AdapterRucrusive(root), workerConnections);
+	} catch (std::exception &e) {
+		std::cerr << e.what() << std::endl;
+	}
+}
+
+void Adapter::AdapterRucrusive(IConfigContext *root)
+{
+	std::vector<IConfigContext *> childs = root->
 }
 
 bool Adapter::CheckContextDependency(IConfigContext *node)
