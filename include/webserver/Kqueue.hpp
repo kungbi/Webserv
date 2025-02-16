@@ -27,6 +27,7 @@ private:
 
 	void initialize();
 	int getFilter(int eventType);
+	Kqueue(void);
 
 public:
 	Kqueue(int maxEvents);

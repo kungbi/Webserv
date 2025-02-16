@@ -13,6 +13,8 @@ private:
 	std::vector<Server*> servers_; // 서버 리스트 (raw pointer)
 	Kqueue& kqueue_;
 
+	Servers(void);
+
 public:
 	Servers(Kqueue& kqueue);
 	~Servers();

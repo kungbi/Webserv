@@ -19,6 +19,8 @@ private:
 	void connectClient(struct kevent& event);
 	void processClientRequest(struct kevent& event);
 
+	Webserver(void);
+
 public:
 	Webserver(Kqueue& kqueue, Servers& servers, WebserverConfig& config);
 	void start();
