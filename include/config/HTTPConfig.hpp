@@ -9,7 +9,7 @@ class HTTPConfig {
 private:
 	std::vector<ServerConfig> servers;
 
-	HTTPConfig();
+	HTTPConfig(void);
 
 public:
 	HTTPConfig(std::vector<ServerConfig>& servers);

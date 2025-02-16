@@ -17,7 +17,7 @@ private:
 	std::string fastcgiPass;
 	std::vector<std::string> fastcgiIndex;
 	
-	LocationConfig();
+	LocationConfig(void);
 
 public:
 	LocationConfig(

@@ -22,7 +22,7 @@ private:
 	std::map<std::string, LocationConfig> prefixLocations; // ~, ~*, etc 로케이션 설정
 	std::map<std::string, LocationConfig> regexLocations; // 로케이션 설정
 
-	ServerConfig();
+	ServerConfig(void);
 
 public:
 	ServerConfig(
