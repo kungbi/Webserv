@@ -9,16 +9,14 @@
 class WebserverConfig {
 private:
 	HTTPConfig httpConfig; // HTTP 설정
-	int workerConnections;
 
 	WebserverConfig(void);
 
 public:
 	// 생성자
-	WebserverConfig(const HTTPConfig& httpConfig, int workerConnections);
+	WebserverConfig(const HTTPConfig& httpConfig);
 
 	HTTPConfig& getHTTPConfig() const;
-	int getWorkerConnections() const;
 };
 
 #endif // WEBSERVERCONFIG_HPP
