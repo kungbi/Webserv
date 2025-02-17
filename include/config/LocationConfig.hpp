@@ -1,15 +1,18 @@
 #ifndef LOCATIONCONFIG_HPP
-#define LOCATIONCONFIG_HPP
+# define LOCATIONCONFIG_HPP
 
-#include <string>
-#include <vector>
+# include <string>
+# include <vector>
+# include <map>
 
 class LocationConfig {
 private:
-	std::string root;         // 루트 디렉토리
-	bool autoIndex;           // 디렉토리 인덱싱 허용 여부
-	std::string redirect;     // 리다이렉트 경로
+	std::string pattern;
+	std::string root;
 	std::vector<std::string> allowMethod;
+
+	bool autoindex;
+	std::map<int, std::string> redirect;
 
 	/**
 	 * CGI관련 변수들 추가
