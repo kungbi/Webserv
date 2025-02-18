@@ -56,7 +56,7 @@ Webserver* dependencyInjection(WebserverConfig* config) {
 	Servers* servers = new Servers(*kqueue);
 	for (std::vector<ServerConfig>::const_iterator it = config->getHTTPConfig().getServers().begin(); it != config->getHTTPConfig().getServers().end(); ++it) {
 		ServerConfig serverConfig = *it;
-		Socket* serverSocket = new Socket("127.0.0.1", serverConfig.getPort());
+		Socket* serverSocket = new Socket(serverConfig.getHost(), serverConfig.getPort());
 		Server* server = servers->createServer(*serverSocket, serverConfig, *kqueue);
 
 		kqueue->addEvent(server->getSocketFd(), SERVER, server->getSocketFd());
