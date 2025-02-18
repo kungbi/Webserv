@@ -3,9 +3,9 @@
 void Kqueue::initialize() {
 	kqueueFd_ = kqueue();
 	if (kqueueFd_ == -1) {
-		perror("kqueue creation failed");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Failed to initialize kqueue");
 	}
+	
 	std::cout << "Kqueue initialized with FD: " << kqueueFd_ << std::endl;
 }
 
@@ -15,10 +15,10 @@ Kqueue::Kqueue(int maxEvents) : maxEvents_(maxEvents) {
 
 Kqueue::~Kqueue() {
 	if (close(kqueueFd_) == -1) {
-		perror("Failed to close kqueue");
-	} else {
-		std::cout << "Kqueue closed." << std::endl;
+		throw std::runtime_error("Failed to close kqueue");
 	}
+
+	std::cout << "Kqueue closed." << std::endl;
 }
 
 int Kqueue::getFilter(int eventType) {
@@ -41,20 +41,20 @@ void Kqueue::addEvent(int fd, int eventType, int serverFd) {
 
 	EV_SET(&event, fd, filter, EV_ADD | EV_ENABLE, 0, 0, eventInfo);
 	if (kevent(kqueueFd_, &event, 1, nullptr, 0, nullptr) == -1) {
-		perror("Failed to add FD to kqueue");
-	} else {
-		std::cout << "FD: " << fd << " added with filter: " << filter << std::endl;
+		throw std::runtime_error("Failed to add FD to kqueue");
 	}
+
+	std::cout << "FD: " << fd << " added with filter: " << filter << std::endl;
 }
 
 void Kqueue::removeEvent(int fd, int filter) {
 	struct kevent event;
 	EV_SET(&event, fd, filter, EV_DELETE, 0, 0, nullptr);
 	if (kevent(kqueueFd_, &event, 1, nullptr, 0, nullptr) == -1) {
-		perror("Failed to remove FD from kqueue");
-	} else {
-		std::cout << "FD: " << fd << " removed." << std::endl;
+		throw std::runtime_error("Failed to remove FD from kqueue");
 	}
+
+	std::cout << "FD: " << fd << " removed." << std::endl;
 }
 
 static const int TIMEOUT_MS = -1;
