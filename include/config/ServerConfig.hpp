@@ -32,10 +32,10 @@ public:
 		const bool isDefault
 	);
 
-	const std::string getHost() const;
-	const int getPort() const;
-	const std::string getServerName() const;
-	const size_t getClientMaxBodySize() const;
+	std::string getHost() const;
+	int getPort() const;
+	std::string getServerName() const;
+	size_t getClientMaxBodySize() const;
 };
 
 #endif

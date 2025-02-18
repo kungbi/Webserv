@@ -25,6 +25,8 @@ public:
 		const std::vector<std::string>& index,
 		const std::string cgiInterpreter
 	);
+
+	bool isAutoindex() const;
 };
 
 #endif // LOCATIONCONFIG_HPP

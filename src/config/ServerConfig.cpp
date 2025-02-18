@@ -44,14 +44,14 @@ ServerConfig::ServerConfig(
 	}
 }
 
-const int ServerConfig::getPort() const {
+int ServerConfig::getPort() const {
 	return port;
 }
 
-const std::string ServerConfig::getServerName() const {
+std::string ServerConfig::getServerName() const {
 	return serverName;
 }
 
-const size_t ServerConfig::getClientMaxBodySize() const {
+size_t ServerConfig::getClientMaxBodySize() const {
 	return clientMaxBodySize;
 }

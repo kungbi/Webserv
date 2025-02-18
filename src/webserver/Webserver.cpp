@@ -35,7 +35,7 @@ void Webserver::processEvents(struct kevent& event) {
 	if (eventInfo->type == REQUEST) {
 		std::cout << "Request event." << std::endl;
 		processClientRequest(event);
-		delete event.udata;
+		delete eventInfo;
 	}
 
 	if (eventInfo->type == RESPONSE) {
@@ -51,6 +51,6 @@ void Webserver::start() {
 		processEvents(*event); // 이벤트 처리
 		std::cout << "================" << std::endl;
 
-		delete event; // 메모리 해제
+		delete[] event; // 메모리 해제
 	}
 }

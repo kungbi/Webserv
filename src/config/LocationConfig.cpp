@@ -17,3 +17,7 @@ LocationConfig::LocationConfig(
       index(index), 
       cgiInterpreter(cgiInterpreter) 
 {}
+
+bool LocationConfig::isAutoindex() const {
+	return autoindex;
+}
