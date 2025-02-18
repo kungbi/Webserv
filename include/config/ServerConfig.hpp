@@ -9,43 +9,33 @@
 
 class ServerConfig {
 private:
-	int port;                 // 포트 번호
-	std::string serverName;   // 서버 이름
-	std::string root;         // 루트 디렉토리
-	std::vector<std::string> index;
-	int client_max_body_size;
+	std::string host;
+	int port;
+	std::string serverName;
+	size_t clientMaxBodySize;
 
-	std::map<std::string, std::string> errorPages;
+	std::map<int, std::string> errorPages;
+	std::vector<LocationConfig> locations;
 
+	bool isDefault;
 
-	std::map<std::string, LocationConfig> exactLocations; // = 로케이션 설정
-	std::map<std::string, LocationConfig> prefixLocations; // ~, ~*, etc 로케이션 설정
-	std::map<std::string, LocationConfig> regexLocations; // 로케이션 설정
-
-	ServerConfig();
+	ServerConfig(void);
 
 public:
 	ServerConfig(
-		const std::string& serverName, 
-		const std::string& root, 
-		int port, 
-		const std::vector<std::string>& index, 
-		int client_max_body_size, 
-		const std::map<std::string, std::string>& errorPages,
-		const std::map<std::string, LocationConfig>& exactLocations,
-		const std::map<std::string, LocationConfig>& prefixLocations,
-		const std::map<std::string, LocationConfig>& regexLocations
+		const std::string host,
+		const int port,
+		const std::string serverName,
+		const size_t clientMaxBodySize,
+		const std::map<int, std::string>& errorPages,
+		const std::vector<LocationConfig>& locations,
+		const bool isDefault
 	);
 
-	std::string getServerName() const;
-	std::string getRoot() const;
+	std::string getHost() const;
 	int getPort() const;
-	std::vector<std::string> getIndex() const;
-	int getClientMaxBodySize() const;
-	std::map<std::string, std::string> getErrorPages() const;
-	std::map<std::string, LocationConfig> getExactLocations() const;
-	std::map<std::string, LocationConfig> getPrefixLocations() const;
-	std::map<std::string, LocationConfig> getRegexLocations() const;
+	std::string getServerName() const;
+	size_t getClientMaxBodySize() const;
 };
 
 #endif

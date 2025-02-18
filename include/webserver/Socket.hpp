@@ -19,6 +19,8 @@ private:
 	void listenSocket(int backlog);
 	void configureSocket(const std::string& ip, int port);
 
+	Socket(void);
+
 public:
 	Socket(const std::string& ip, int port);
 	~Socket();

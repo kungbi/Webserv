@@ -13,6 +13,8 @@ private:
 	ServerConfig& serverConfig_;
 	Kqueue& kqueue_;
 
+	Server(void);
+
 public:
 	Server(Socket &serverSocket, ServerConfig& serverConfig, Kqueue& kqueue);
 	int getSocketFd() const;
