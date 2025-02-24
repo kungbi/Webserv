@@ -7,6 +7,9 @@ bool Request::isComplete() const {
 }
 
 void Request::appendData(const char* data, size_t length) {
+	if (this->complete_ == true)
+		throw std::runtime_error("Request is already complete");
+
 	originalRequest_.append(data, length);
 
 	if (originalRequest_.find("\r\n\r\n") != std::string::npos)
