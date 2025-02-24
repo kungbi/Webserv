@@ -16,3 +16,7 @@ void Request::appendData(const char* data, size_t length) {
 bool Request::equalFd(int fd) const {
 	return fd_ == fd;
 }
+
+int Request::getFd() const {
+	return fd_;
+}

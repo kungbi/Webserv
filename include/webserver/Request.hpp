@@ -21,6 +21,7 @@ public:
 	void appendData(const char* data, size_t length);
 
 	bool equalFd(int fd) const;
+	int getFd() const;
 };
 
 #endif
