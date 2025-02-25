@@ -13,7 +13,39 @@ int Server::acceptClient() {
 	return serverSocket_.acceptConnection(); // 클라이언트 요청을 수락하고 FD 반환
 }
 
-int Server::handleRequest(int clientFd) {
+int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRead) {
+	std::cout << "Received: " << buffer << " from FD: " << clientFd << std::endl;
+
+	if (!this->requests_.isExist(clientFd)) {
+		this->requests_.addRequest(new Request(clientFd));
+	}
+	Request* request = this->requests_.getRequest(clientFd);
+	request->appendData(buffer, bytesRead);
+
+	if (request->isComplete()) {
+		const std::string response = 
+			"HTTP/1.1 200 OK\n" 
+			"Content-Type: text/html\n" 
+			"Content-Length: 102\n" 
+			"\n" 
+			"<html>\n" 
+			"<body>\n" 
+				"<h1>Welcome to our website</h1>\n" 
+			"</body>\n" 
+			"</html>";
+		sendResponse(clientFd, response);
+		this->requests_.removeRequest(clientFd);
+		return 0;
+	}
+
+	return 2;
+}
+
+void Server::sendResponse(int clientFd, const std::string& response) {
+	send(clientFd, response.c_str(), response.size(), 0);
+}
+
+int Server::handleRequest(int clientFd) { // <- 함수 분리 전
 	std::cout << "Handling request for client FD: " << clientFd << std::endl;
 
 	// 클라이언트 요청 처리
@@ -23,26 +55,19 @@ int Server::handleRequest(int clientFd) {
 
 	if (bytesRead > 0) {
 		buffer[bytesRead] = '\0'; // Null-terminate for safety
-		std::cout << "Received: " << buffer << " from FD: " << clientFd << std::endl;
-
-		const char* response = 
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Length: 12\r\n"
-			"Connection: close\r\n"
-			"\r\n"
-			"Hello World\n";
-		send(clientFd, response, strlen(response), 0);
-		return 0;
-	} else if (bytesRead == 0) {
+		return processClientData(clientFd, buffer, bytesRead);
+	}
+	
+	if (bytesRead == 0) {
 		// 클라이언트가 연결을 닫은 경우
 		std::cout << "Client disconnected on FD: " << clientFd << std::endl;
 		// kqueue.removeEvent(fd, EVFILT_READ); // Kqueue에서 제거
 		close(clientFd); // 소켓 닫기
-	} else {
-		// 읽기 실패 (에러 처리)
-		perror("Error reading from FD");
-		// kqueue.removeEvent(clientFd, EVFILT_READ); // Kqueue에서 제거
-		close(clientFd); // 소켓 닫기
+		return 1;
 	}
+	
+	perror("Error reading from FD");
+	// kqueue.removeEvent(clientFd, EVFILT_READ); // Kqueue에서 제거
+	close(clientFd); // 소켓 닫기
 	return 1;
 }

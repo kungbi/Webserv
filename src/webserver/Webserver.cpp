@@ -14,11 +14,11 @@ void Webserver::connectClient(struct kevent& event) {
 	kqueue_.addEvent(clientFd, REQUEST, serverFd);
 }
 
-void Webserver::processClientRequest(struct kevent& event) {
+int Webserver::processClientRequest(struct kevent& event) {
 	int serverFd = ((EventInfo *) event.udata)->serverFd;
 	int clientFd = event.ident;
 
-	servers_.processRequest(serverFd, clientFd);
+	return servers_.processRequest(serverFd, clientFd);
 }
 
 void Webserver::processEvents(struct kevent& event) {
@@ -34,8 +34,9 @@ void Webserver::processEvents(struct kevent& event) {
 
 	if (eventInfo->type == REQUEST) {
 		std::cout << "Request event." << std::endl;
-		processClientRequest(event);
-		delete eventInfo;
+		if (processClientRequest(event) == 0) {
+			delete eventInfo;
+		}
 	}
 
 	if (eventInfo->type == RESPONSE) {

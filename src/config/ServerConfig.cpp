@@ -44,6 +44,10 @@ ServerConfig::ServerConfig(
 	}
 }
 
+std::string ServerConfig::getHost() const {
+	return host;
+}
+
 int ServerConfig::getPort() const {
 	return port;
 }
