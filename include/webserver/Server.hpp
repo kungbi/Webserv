@@ -17,7 +17,7 @@ private:
 
 	Server(void);
 
-	void processClientData(int clientFd, const char* buffer, ssize_t bytesRead);
+	int processClientData(int clientFd, const char* buffer, ssize_t bytesRead);
 	void sendResponse(int clientFd, const std::string& response);
 
 public:

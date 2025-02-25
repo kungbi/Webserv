@@ -31,5 +31,7 @@ void Requests::removeRequest(int fd) {
 		std::cerr << "Request with fd " << fd << " does not exist" << std::endl;
 		return;
 	}
+	if (requests_[fd])
+		delete requests_[fd];
 	requests_.erase(fd);
 }

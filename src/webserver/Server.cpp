@@ -13,7 +13,7 @@ int Server::acceptClient() {
 	return serverSocket_.acceptConnection(); // 클라이언트 요청을 수락하고 FD 반환
 }
 
-void Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRead) {
+int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRead) {
 	std::cout << "Received: " << buffer << " from FD: " << clientFd << std::endl;
 
 	if (!this->requests_.isExist(clientFd)) {
@@ -31,7 +31,10 @@ void Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRe
 			"Hello World\n";
 		sendResponse(clientFd, response);
 		this->requests_.removeRequest(clientFd);
+		return 0;
 	}
+
+	return 2;
 }
 
 void Server::sendResponse(int clientFd, const std::string& response) {
@@ -48,8 +51,7 @@ int Server::handleRequest(int clientFd) { // <- 함수 분리 전
 
 	if (bytesRead > 0) {
 		buffer[bytesRead] = '\0'; // Null-terminate for safety
-		processClientData(clientFd, buffer, bytesRead);
-		return 2;
+		return processClientData(clientFd, buffer, bytesRead);
 	}
 	
 	if (bytesRead == 0) {
