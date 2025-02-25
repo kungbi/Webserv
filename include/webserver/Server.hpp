@@ -17,6 +17,9 @@ private:
 
 	Server(void);
 
+	void processClientData(int clientFd, const char* buffer, ssize_t bytesRead);
+	void sendResponse(int clientFd, const std::string& response);
+
 public:
 	Server(Socket &serverSocket, ServerConfig& serverConfig, Kqueue& kqueue);
 	int getSocketFd() const;

@@ -13,6 +13,31 @@ int Server::acceptClient() {
 	return serverSocket_.acceptConnection(); // 클라이언트 요청을 수락하고 FD 반환
 }
 
+void Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRead) {
+	std::cout << "Received: " << buffer << " from FD: " << clientFd << std::endl;
+
+	if (!this->requests_.isExist(clientFd)) {
+		this->requests_.addRequest(new Request(clientFd));
+	}
+	Request* request = this->requests_.getRequest(clientFd);
+	request->appendData(buffer, bytesRead);
+
+	if (request->isComplete()) {
+		const std::string response = 
+			"HTTP/1.1 200 OK\r\n"
+			"Content-Length: 12\r\n"
+			"Connection: close\r\n"
+			"\r\n"
+			"Hello World\n";
+		sendResponse(clientFd, response);
+		this->requests_.removeRequest(clientFd);
+	}
+}
+
+void Server::sendResponse(int clientFd, const std::string& response) {
+	send(clientFd, response.c_str(), response.size(), 0);
+}
+
 int Server::handleRequest(int clientFd) { // <- 함수 분리 전
 	std::cout << "Handling request for client FD: " << clientFd << std::endl;
 
@@ -23,26 +48,7 @@ int Server::handleRequest(int clientFd) { // <- 함수 분리 전
 
 	if (bytesRead > 0) {
 		buffer[bytesRead] = '\0'; // Null-terminate for safety
-		std::cout << "Received: " << buffer << " from FD: " << clientFd << std::endl;
-
-		if (!this->requests_.isExist(clientFd)) {
-			this->requests_.addRequest(new Request(clientFd));
-		}
-		Request* request = this->requests_.getRequest(clientFd);
-		request->appendData(buffer, bytesRead);
-
-		if (request->isComplete()) {
-			const char* response = 
-				"HTTP/1.1 200 OK\r\n"
-				"Content-Length: 12\r\n"
-				"Connection: close\r\n"
-				"\r\n"
-				"Hello World\n";
-			send(clientFd, response, strlen(response), 0);
-			this->requests_.removeRequest(clientFd);
-			return 0;
-		}
-
+		processClientData(clientFd, buffer, bytesRead);
 		return 2;
 	}
 	
