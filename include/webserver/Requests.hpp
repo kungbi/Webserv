@@ -7,15 +7,15 @@
 
 class Requests {
 private:
-	std::map<int, Request> requests_;
+	std::map<int, Request*> requests_;
 
 public:
 	Requests();
 
-	void addRequest(Request& request);
+	void addRequest(Request* request);
 	size_t size() const;
 	bool isExist(int fd) const;
-	Request& getRequest(int fd);
+	Request* getRequest(int fd);
 	void removeRequest(int fd);
 };
 

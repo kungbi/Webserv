@@ -81,8 +81,11 @@ int Servers::processRequest(int serverFd, int clientFd) {
 	}
 
 	int result = server->handleRequest(clientFd);
-	kqueue_.removeEvent(clientFd, EVFILT_READ);
-	close(clientFd);
+	std::cout << "Result: " << result << std::endl;
+	if (result == 0) {
+		kqueue_.removeEvent(clientFd, EVFILT_READ);
+		close(clientFd);
+	}
 
 	return result;
 }
