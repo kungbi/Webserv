@@ -24,11 +24,15 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 
 	if (request->isComplete()) {
 		const std::string response = 
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Length: 12\r\n"
-			"Connection: close\r\n"
-			"\r\n"
-			"Hello World\n";
+			"HTTP/1.1 200 OK\r\n" 
+			"Content-Type: text/html\r\n" 
+			"Content-Length: 102\r\n" 
+			"\r\n" 
+			"<html>\r\n" 
+			"<body>\r\n" 
+				"<h1>Welcome to our website</h1>\r\n" 
+			"</body>\r\n" 
+			"</html>";
 		sendResponse(clientFd, response);
 		this->requests_.removeRequest(clientFd);
 		return 0;
