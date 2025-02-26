@@ -1,7 +1,6 @@
 #include "Response.hpp"
 
 Response::Response(
-	int fd,
 	const std::string& protocolVersion,
 	int statusCode,
 	const std::string& reasonPhrase,
@@ -11,8 +10,7 @@ Response::Response(
 	size_t contentLength,
 	const std::string& connection,
 	const std::string& body
-) : fd_(fd),
-	protocolVersion_(protocolVersion),
+) : protocolVersion_(protocolVersion),
 	statusCode_(statusCode),
 	reasonPhrase_(reasonPhrase),
 	date_(date),
@@ -21,10 +19,6 @@ Response::Response(
 	contentLength_(contentLength),
 	connection_(connection),
 	body_(body) {}
-
-int Response::getFd(void) const {
-	return fd_;
-}
 
 std::string Response::getResponse(void) {
 	std::ostringstream oss;
@@ -43,11 +37,6 @@ std::string Response::getResponse(void) {
 	oss << "\r\n" <<  body_;
 
 	return oss.str();
-}
-
-Response::Builder& Response::Builder::setFd(int fd) {
-	fd_ = fd;
-	return *this;
 }
 
 Response::Builder& Response::Builder::setProtocolVersion(const std::string& protocolVersion) {
@@ -85,11 +74,11 @@ Response::Builder& Response::Builder::setBody(const std::string& body) {
 	return *this;
 }
 
-Response Response::Builder::build() const {
+Response* Response::Builder::build() const {
 	std::time_t now = std::time(nullptr);
 	std::tm& date = *std::gmtime(&now);
 
 	size_t contentLength = body_.size();
 
-	return Response(fd_, protocolVersion_, statusCode_, reasonPhrase_, date, server_, contentType_, contentLength, connection_, body_);
+	return new Response(protocolVersion_, statusCode_, reasonPhrase_, date, server_, contentType_, contentLength, connection_, body_);
 }

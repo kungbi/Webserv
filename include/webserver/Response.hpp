@@ -7,8 +7,6 @@
 
 class Response {
 private:
-	int fd_;
-
 	// Status Line
 	std::string protocolVersion_;
 	int statusCode_;
@@ -26,7 +24,6 @@ private:
 
 	Response(void);
 	Response(
-		int fd,
 		const std::string& protocolVersion,
 		int statusCode,
 		const std::string& reasonPhrase,
@@ -41,13 +38,11 @@ private:
 public:
 	class Builder;
 
-	int getFd(void) const;
 	std::string getResponse(void);
 };
 
 class Response::Builder {
 private:
-	int fd_;
 	std::string protocolVersion_;
 	int statusCode_;
 	std::string reasonPhrase_;
@@ -57,7 +52,6 @@ private:
 	std::string body_;
 
 public:
-	Builder& setFd(int fd);
 	Builder& setProtocolVersion(const std::string& protocolVersion);
 	Builder& setStatusCode(int statusCode);
 	Builder& setReasonPhrase(const std::string& reasonPhrase);
@@ -66,7 +60,7 @@ public:
 	Builder& setConnection(const std::string& connection);
 	Builder& setBody(const std::string& body);
 
-	Response build() const;
+	Response* build() const;
 };
 
 #endif // RESPONSE_HPP

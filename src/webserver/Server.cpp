@@ -23,17 +23,24 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 	request->appendData(buffer, bytesRead);
 
 	if (request->isComplete()) {
-		const std::string response = 
-			"HTTP/1.1 200 OK\n" 
-			"Content-Type: text/html\n" 
-			"Content-Length: 102\n" 
-			"\n" 
-			"<html>\n" 
-			"<body>\n" 
-				"<h1>Welcome to our website</h1>\n" 
-			"</body>\n" 
-			"</html>";
-		sendResponse(clientFd, response);
+		Response* response = Response::Builder()
+			.setProtocolVersion("HTTP/1.1")
+			.setStatusCode(200)
+			.setReasonPhrase("OK")
+			.setServer("Server")
+			.setContentType("text/html")
+			.setConnection("close")
+			.setBody(
+				"<html>\n" 
+				"<body>\n" 
+					"<h1>Welcome to our website</h1>\n" 
+				"</body>\n" 
+				"</html>"
+			)
+			.build();
+		
+		sendResponse(clientFd, response->getResponse());
+		delete response;
 		this->requests_.removeRequest(clientFd);
 		return 0;
 	}
