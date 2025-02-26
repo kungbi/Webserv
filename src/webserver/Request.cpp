@@ -23,3 +23,4 @@ bool Request::equalFd(int fd) const {
 int Request::getFd() const {
 	return fd_;
 }
+

@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Request.hpp"
 
 Server::Server(Socket& serverSocket, ServerConfig& serverConfig, Kqueue& kqueue)
 	: serverSocket_(serverSocket), serverConfig_(serverConfig), kqueue_(kqueue) {
@@ -23,6 +24,7 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 	request->appendData(buffer, bytesRead);
 
 	if (request->isComplete()) {
+		parseRequestHeader();
 		const std::string response = 
 			"HTTP/1.1 200 OK\n" 
 			"Content-Type: text/html\n" 
@@ -70,4 +72,9 @@ int Server::handleRequest(int clientFd) { // <- 함수 분리 전
 	// kqueue.removeEvent(clientFd, EVFILT_READ); // Kqueue에서 제거
 	close(clientFd); // 소켓 닫기
 	return 1;
+}
+
+int Server::parseRequestHeader()
+{
+	
 }
