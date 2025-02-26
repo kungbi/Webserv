@@ -5,7 +5,7 @@ Requests::Requests() {}
 void Requests::addRequest(Request* request) {
 	if (this->isExist(request->getFd())) {
 		std::cerr << "Request with fd " << request->getFd() << " already exists" << std::endl;
-		return;
+		throw std::runtime_error("Request already exists");
 	}
 	requests_[request->getFd()] = request;
 }
