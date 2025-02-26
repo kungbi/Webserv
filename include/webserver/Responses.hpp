@@ -11,7 +11,7 @@ private:
 public:
 	Responses();
 
-	void addResponse(const Response& response);
+	void addResponse(Response* response);
 	size_t size() const;
 	bool isExist(int fd) const;
 };

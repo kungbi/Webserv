@@ -2,11 +2,11 @@
 
 Responses::Responses() {}
 
-void Responses::addResponse(const Response& response) {
-	if (isExist(response.getFd()) {
+void Responses::addResponse(Response* response) {
+	if (this->isExist(response->getFd())) {
 		throw std::runtime_error("Response already exists");
-	})
-	responses_[response.getFd()] = new Response(response);
+	}
+	responses_[response->getFd()] = response;
 }
 
 size_t Responses::size() const {
