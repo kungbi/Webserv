@@ -74,11 +74,11 @@ Response::Builder& Response::Builder::setBody(const std::string& body) {
 	return *this;
 }
 
-Response* Response::Builder::build() const {
+Response Response::Builder::build() const {
 	std::time_t now = std::time(nullptr);
 	std::tm& date = *std::gmtime(&now);
 
 	size_t contentLength = body_.size();
 
-	return new Response(protocolVersion_, statusCode_, reasonPhrase_, date, server_, contentType_, contentLength, connection_, body_);
+	return Response(protocolVersion_, statusCode_, reasonPhrase_, date, server_, contentType_, contentLength, connection_, body_);
 }

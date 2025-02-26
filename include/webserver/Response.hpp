@@ -60,7 +60,7 @@ public:
 	Builder& setConnection(const std::string& connection);
 	Builder& setBody(const std::string& body);
 
-	Response* build() const;
+	Response build() const;
 };
 
 #endif // RESPONSE_HPP

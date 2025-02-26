@@ -23,7 +23,7 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 	request->appendData(buffer, bytesRead);
 
 	if (request->isComplete()) {
-		Response* response = Response::Builder()
+		Response response = Response::Builder()
 			.setProtocolVersion("HTTP/1.1")
 			.setStatusCode(200)
 			.setReasonPhrase("OK")
@@ -39,8 +39,7 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 			)
 			.build();
 		
-		sendResponse(clientFd, response->getResponse());
-		delete response;
+		sendResponse(clientFd, response.getResponse());
 		this->requests_.removeRequest(clientFd);
 		return 0;
 	}
