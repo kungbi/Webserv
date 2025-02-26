@@ -41,6 +41,7 @@ private:
 public:
 	class Builder;
 
+	int getFd(void) const;
 	std::string getResponse(void);
 };
 

@@ -22,6 +22,10 @@ Response::Response(
 	connection_(connection),
 	body_(body) {}
 
+int Response::getFd(void) const {
+	return fd_;
+}
+
 std::string Response::getResponse(void) {
 	std::ostringstream oss;
 
