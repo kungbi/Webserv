@@ -39,6 +39,8 @@ std::string Response::getResponse(void) {
 	return oss.str();
 }
 
+Response::Builder::Builder(void) : protocolVersion_(""), statusCode_(0), reasonPhrase_(""), server_(""), contentType_(""), connection_(""), body_("") {}
+
 Response::Builder& Response::Builder::setProtocolVersion(const std::string& protocolVersion) {
 	protocolVersion_ = protocolVersion;
 	return *this;
@@ -74,7 +76,26 @@ Response::Builder& Response::Builder::setBody(const std::string& body) {
 	return *this;
 }
 
+void Response::Builder::validate(void) const {
+	if (protocolVersion_.empty()) 
+		throw std::invalid_argument("Protocol version must not be empty");
+	if (statusCode_ == 0) 
+		throw std::invalid_argument("Status code must not be 0");
+	if (reasonPhrase_.empty())
+		throw std::invalid_argument("Reason phrase must not be empty");
+	if (server_.empty()) 
+		throw std::invalid_argument("Server must not be empty");
+	if (contentType_.empty())
+		throw std::invalid_argument("Content type must not be empty");
+	if (connection_.empty())
+		throw std::invalid_argument("Connection must not be empty");
+	if (body_.empty())
+		throw std::invalid_argument("Body must not be empty");
+}
+
 Response Response::Builder::build() const {
+	this->validate();
+
 	std::time_t now = std::time(nullptr);
 	std::tm& date = *std::gmtime(&now);
 

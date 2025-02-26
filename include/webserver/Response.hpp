@@ -51,7 +51,11 @@ private:
 	std::string connection_;
 	std::string body_;
 
+	void validate(void) const;
+
 public:
+	Builder(void);
+
 	Builder& setProtocolVersion(const std::string& protocolVersion);
 	Builder& setStatusCode(int statusCode);
 	Builder& setReasonPhrase(const std::string& reasonPhrase);
