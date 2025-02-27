@@ -14,13 +14,13 @@ private:
 	std::string originalRequest_;
 
 	// 파싱된 내용들 추가
-	std::string request_type;
-	std::string protocolVersion;
-	std::string hostName;
-	std::string port;
-	std::string connection;
-	size_t contentLength;
-	std::map<double, std::vector<std::string>, std::greater<double> > acceptTypes;
+	std::string requestType_;
+	std::string protocolVersion_;
+	std::string hostName_;
+	std::string port_;
+	std::string connection_;
+	size_t contentLength_;
+	std::map<double, std::vector<std::string>, std::greater<double> > acceptTypes_;
 
 
 
@@ -34,6 +34,16 @@ public:
 
 	bool equalFd(int fd) const;
 	int getFd() const;
+
+	std::string getOriginalRequest() const;
+
+	void setRequestType(const std::string& type);
+	void setPortNumber(const std::string& portNumber);
+	void setProtocolVersion(const std::string& version);
+	void setHostName(const std::string& host);
+	void setConnection(const std::string& connection);
+	void setContentLength(size_t length);
+	void setAcceptTypes(const std::map<double, std::vector<std::string>, std::greater<double> >& types);
 };
 
 #endif
