@@ -24,7 +24,7 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 	request->appendData(buffer, bytesRead);
 
 	if (request->isComplete()) {
-		//parseRequestHeader();
+		requestParser_.parseRequestHeader(request);
 		Response response = Response::Builder()
 			.setProtocolVersion("HTTP/1.1")
 			.setStatusCode(200)
@@ -80,7 +80,3 @@ int Server::handleRequest(int clientFd) { // <- 함수 분리 전
 	return 1;
 }
 
-int Server::parseRequestHeader()
-{
-	
-}

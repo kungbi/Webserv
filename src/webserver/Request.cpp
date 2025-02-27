@@ -24,3 +24,19 @@ int Request::getFd() const {
 	return fd_;
 }
 
+const std::string& Request::getOriginalRequest() const {
+	return originalRequest_;
+}
+
+void Request::setRequestType(const std::string& type) {
+	requestType_ = type;
+}
+
+void Request::setTarget(const std::string& target) {
+	target_ = target;
+}
+
+void Request::setProtocolVersion(const std::string& version) {
+	protocolVersion_ = version;
+}
+

@@ -17,6 +17,7 @@ private:
 	std::string requestType_;
 	std::string protocolVersion_;
 	std::string hostName_;
+	std::string target_;
 	std::string port_;
 	std::string connection_;
 	size_t contentLength_;
@@ -35,9 +36,10 @@ public:
 	bool equalFd(int fd) const;
 	int getFd() const;
 
-	std::string getOriginalRequest() const;
+	const std::string& getOriginalRequest() const;
 
 	void setRequestType(const std::string& type);
+	void setTarget(const std::string& target);
 	void setPortNumber(const std::string& portNumber);
 	void setProtocolVersion(const std::string& version);
 	void setHostName(const std::string& host);
