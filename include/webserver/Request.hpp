@@ -3,6 +3,8 @@
 
 # include <iostream>
 # include <string>
+# include <map>
+# include <vector>
 
 class Request {
 private:
@@ -13,11 +15,13 @@ private:
 
 	// 파싱된 내용들 추가
 	std::string request_type;
-	std::string http_ver;
-	std::string host_name;
-	std::string host_port;
+	std::string protocolVersion;
+	std::string hostName;
+	std::string port;
 	std::string connection;
-	int content_length;
+	size_t contentLength;
+	std::map<double, std::vector<std::string>, std::greater<double> > acceptTypes;
+
 
 
 	Request();
