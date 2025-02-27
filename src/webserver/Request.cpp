@@ -28,6 +28,39 @@ const std::string& Request::getOriginalRequest() const {
 	return originalRequest_;
 }
 
+RequestType Request::getRequestType() const {
+	return requestType_;
+}
+
+std::string Request::getProtocolVersion() const {
+	return protocolVersion_;
+}
+
+std::string Request::getHostName() const {
+	return hostName_;
+}
+
+std::string Request::getTarget() const {
+	return target_;
+}
+
+int Request::getPort() const {
+	return port_;
+}
+
+std::string Request::getConnection() const {
+	return connection_;
+}
+
+size_t Request::getContentLength() const {
+	return contentLength_;
+}
+
+std::string Request::getAccept() const {
+	return accept_;
+}
+
+
 void Request::setRequestType(const std::string& type) {
 	if (type == "GET")
 		requestType_ = GET;
@@ -92,4 +125,5 @@ void Request::test()
 	std::cout<<"target : "<< target_ << std::endl;
 	std::cout<<"connection : " << connection_ << std::endl;
 	std::cout<<"accept : " << accept_ << std::endl;
+	std::cout<<"content-length : " << contentLength_<<std::endl;
 }

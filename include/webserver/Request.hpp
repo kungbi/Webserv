@@ -46,6 +46,14 @@ public:
 	int getFd() const;
 
 	const std::string& getOriginalRequest() const;
+	RequestType getRequestType() const;
+	std::string getProtocolVersion() const { return protocolVersion_; }
+	std::string getHostName() const { return hostName_; }
+	std::string getTarget() const { return target_; }
+	int getPort() const { return port_; }
+	std::string getConnection() const { return connection_; }
+	size_t getContentLength() const { return contentLength_; }
+	std::string getAccept() const { return accept_; }
 
 	void setRequestType(const std::string& type);
 	void setTarget(const std::string& target);
