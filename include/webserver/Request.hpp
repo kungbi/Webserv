@@ -6,6 +6,14 @@
 # include <map>
 # include <vector>
 
+enum RequestType {
+	GET,
+	POST,
+	PUT,
+	PATCH,
+	DELETE,
+};
+
 class Request {
 private:
 	int fd_;
@@ -14,14 +22,14 @@ private:
 	std::string originalRequest_;
 
 	// 파싱된 내용들 추가
-	std::string requestType_;
+	RequestType requestType_;
 	std::string protocolVersion_;
 	std::string hostName_;
 	std::string target_;
-	std::string port_;
+	int port_;
 	std::string connection_;
 	size_t contentLength_;
-	std::map<double, std::vector<std::string>, std::greater<double> > acceptTypes_;
+	std::string accept_;
 
 
 
@@ -29,6 +37,7 @@ private:
 
 public:
 	Request(int fd);
+	void test();
 
 	bool isComplete() const;
 	void appendData(const char* data, size_t length);
@@ -40,12 +49,12 @@ public:
 
 	void setRequestType(const std::string& type);
 	void setTarget(const std::string& target);
-	void setPortNumber(const std::string& portNumber);
+	void setPort(const int port);
 	void setProtocolVersion(const std::string& version);
 	void setHostName(const std::string& host);
 	void setConnection(const std::string& connection);
 	void setContentLength(size_t length);
-	void setAcceptTypes(const std::map<double, std::vector<std::string>, std::greater<double> >& types);
+	void setAccept(const std::string& accept);
 };
 
 #endif

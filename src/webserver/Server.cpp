@@ -25,6 +25,7 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 
 	if (request->isComplete()) {
 		requestParser_.parseRequestHeader(request);
+		request->test();
 		Response response = Response::Builder()
 			.setProtocolVersion("HTTP/1.1")
 			.setStatusCode(200)

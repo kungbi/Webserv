@@ -29,7 +29,18 @@ const std::string& Request::getOriginalRequest() const {
 }
 
 void Request::setRequestType(const std::string& type) {
-	requestType_ = type;
+	if (type == "GET")
+		requestType_ = GET;
+	else if (type == "POST")
+		requestType_ = POST;
+	else if (type == "PUT")
+		requestType_ = PUT;
+	else if (type == "PATCH")
+		requestType_ = PATCH;
+	else if (type == "DELETE")
+		requestType_ = DELETE;
+	else
+		throw std::runtime_error("Invalid request type");
 }
 
 void Request::setTarget(const std::string& target) {
@@ -40,3 +51,45 @@ void Request::setProtocolVersion(const std::string& version) {
 	protocolVersion_ = version;
 }
 
+void Request::setPort(const int port)
+{
+	port_ = port;
+}
+
+void Request::setConnection(const std::string& connection)
+{
+	connection_ = connection;
+}
+
+void Request::setHostName(const std::string& hostName)
+{
+	hostName_ = hostName;
+}
+
+void Request::setAccept(const std::string& accept)
+{
+	accept_ = accept;
+}
+
+void Request::setContentLength(size_t length) {
+	contentLength_ = length;
+}
+
+void Request::test()
+{
+	std::cout << "Type : ";
+	switch (requestType_) {
+		case GET:    std::cout << "GET"; break;
+		case POST:   std::cout << "POST"; break;
+		case PUT:    std::cout << "PUT"; break;
+		case PATCH:  std::cout << "PATCH"; break;
+		case DELETE: std::cout << "DELETE"; break;
+	}
+	std::cout << std::endl;
+	std::cout<<"protocolVersion : "<< protocolVersion_ << std::endl;
+	std::cout<<"hostName_ : "<< hostName_ << std::endl;
+	std::cout<<"portNumber : "<< port_ << std::endl;
+	std::cout<<"target : "<< target_ << std::endl;
+	std::cout<<"connection : " << connection_ << std::endl;
+	std::cout<<"accept : " << accept_ << std::endl;
+}
