@@ -4,7 +4,8 @@ CXXFLAGS = -Wall -Wextra -std=c++98
 
 # 디렉토리 설정
 SRC_DIR = src
-INC_DIR = -Iinclude -Iinclude/webserver -Iinclude/config -Iinclude/parser
+INC_DIR = -Iinclude -Iinclude/webserver -Iinclude/config -Iinclude/config_parser \
+			-Iinclude/config_adapter
 BUILD_DIR = build
 
 # 소스 파일 및 객체 파일 설정
