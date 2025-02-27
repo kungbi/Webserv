@@ -8,11 +8,11 @@
 #include "ConfigParser.hpp"
 #include "ConfigAdapter.hpp"
 
-WebserverConfig* initializeConfig()
+WebserverConfig* initializeConfig(std::string configPath)
 {
     // 설정 파일을 읽기
     ConfigReader reader;
-    std::string configContent = reader.readConfigFile("default.conf");  // 설정 파일 경로
+    std::string configContent = reader.readConfigFile(configPath);  // 설정 파일 경로
 
     if (configContent.empty()) throw std::runtime_error("Failed to read configuration file.");
 
@@ -44,7 +44,7 @@ Webserver* dependencyInjection(WebserverConfig* config) {
 		Socket* serverSocket = new Socket(serverConfig.getHost(), serverConfig.getPort());
 		Server* server = servers->createServer(*serverSocket, serverConfig, *kqueue);
 
-		kqueue->addEvent(server->getSocketFd(), SERVER, server->getSocketFd());
+		kqueue->addEvent(server->getSocketFd(), KQUEUE_EVENT::SERVER, server->getSocketFd());
 		servers->addServer(*server);
 	}
 
@@ -53,15 +53,14 @@ Webserver* dependencyInjection(WebserverConfig* config) {
 
 int main(int argc, char* argv[]) {
 	atexit(leak);
-	WebserverConfig* config = initializeConfig();
-	std::cout << "WebserverConfig initialized" << std::endl;
-	std::cout << "HTTPConfig: " << config->getHTTPConfig().getServers().size() << std::endl;
+	if (2 < argc)
+		throw std::runtime_error("Invalid number of arguments");
 
-	std::cout << "ServerConfig: " << config->getHTTPConfig().getServers()[0].getServerName() << std::endl;
-	std::cout << "Port: " << config->getHTTPConfig().getServers()[0].getPort() << std::endl;
-
-	std::cout << std::endl;
-
+	std::string configPath = "default.conf";
+	if (2 == argc)
+		configPath = argv[1];
+	
+	WebserverConfig* config = initializeConfig(configPath);
 	Webserver* webserver = dependencyInjection(config);
 	webserver->start();
 
