@@ -8,6 +8,7 @@
 # include "Kqueue.hpp"
 # include "Requests.hpp"
 # include "Response.hpp"
+# include "../request_parser/requestParser.hpp"
 
 class Server {
 private:
@@ -15,6 +16,7 @@ private:
 	ServerConfig& serverConfig_;
 	Kqueue& kqueue_;
 	Requests requests_;
+	RequestParser requestParser_;
 
 	Server(void);
 
@@ -26,6 +28,7 @@ public:
 	int getSocketFd() const;
 	int acceptClient();
 	int handleRequest(int clientFd);
+	int parseRequestHeader();
 };
 
 

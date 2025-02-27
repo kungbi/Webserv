@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Request.hpp"
 
 Server::Server(Socket& serverSocket, ServerConfig& serverConfig, Kqueue& kqueue)
 	: serverSocket_(serverSocket), serverConfig_(serverConfig), kqueue_(kqueue) {
@@ -23,6 +24,7 @@ int Server::processClientData(int clientFd, const char* buffer, ssize_t bytesRea
 	request->appendData(buffer, bytesRead);
 
 	if (request->isComplete()) {
+		requestParser_.parseRequestHeader(request);
 		Response response = Response::Builder()
 			.setProtocolVersion("HTTP/1.1")
 			.setStatusCode(200)
@@ -77,3 +79,5 @@ int Server::handleRequest(int clientFd) { // <- 함수 분리 전
 	close(clientFd); // 소켓 닫기
 	return 1;
 }
+
+
