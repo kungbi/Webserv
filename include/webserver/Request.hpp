@@ -26,6 +26,10 @@ private:
 	std::string protocolVersion_;
 	std::string hostName_;
 	std::string target_;
+	std::string query_;
+	std::string fileName_;
+	std::string extension_;
+
 	int port_;
 	std::string connection_;
 	size_t contentLength_;
@@ -54,6 +58,9 @@ public:
 	std::string getConnection() const;
 	size_t getContentLength() const;
 	std::string getAccept() const;
+	std::string getQuery() const;
+	std::string getFilename() const;
+	std::string getExtension() const;
 
 	void setRequestType(const std::string& type);
 	void setTarget(const std::string& target);
@@ -63,6 +70,9 @@ public:
 	void setConnection(const std::string& connection);
 	void setContentLength(size_t length);
 	void setAccept(const std::string& accept);
+	void setQuery(const std::string& query);
+	void setFilename(const std::string& filename);
+	void setExtension(const std::string& extension);
 };
 
 #endif

@@ -40,10 +40,6 @@ std::string Request::getHostName() const {
 	return hostName_;
 }
 
-std::string Request::getTarget() const {
-	return target_;
-}
-
 int Request::getPort() const {
 	return port_;
 }
@@ -58,6 +54,22 @@ size_t Request::getContentLength() const {
 
 std::string Request::getAccept() const {
 	return accept_;
+}
+
+std::string Request::getTarget() const {
+	return target_;
+}
+
+std::string Request::getQuery() const {
+	return query_;
+}
+
+std::string Request::getFilename() const {
+	return fileName_;
+}
+
+std::string Request::getExtension() const {
+	return extension_;
 }
 
 
@@ -106,6 +118,18 @@ void Request::setAccept(const std::string& accept)
 
 void Request::setContentLength(size_t length) {
 	contentLength_ = length;
+}
+
+void Request::setQuery(const std::string& query) { 
+	query_ = query;
+}
+
+void Request::setFilename(const std::string& filename) {
+	fileName_ = filename;
+}
+
+void Request::setExtension(const std::string& extension) {
+	extension_ = extension;
 }
 
 // void Request::test()

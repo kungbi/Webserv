@@ -16,8 +16,13 @@ void RequestParser::parseRequestHeader(Request *request)
         std::string method, target, version;
         lineStream >> method >> target >> version;
         request->setRequestType(method);
-        request->setTarget(target);
         request->setProtocolVersion(version);
+
+        UriComponents uri = RequestParser::parseUri(target);
+        request->setTarget(uri.path);
+        request->setQuery(uri.query);
+        request->setFilename(uri.filename);
+        request->setExtension(uri.extension);
     }
     while (std::getline(stream, line) && !line.empty()) {
         size_t colonPos = line.find(":");
@@ -45,4 +50,30 @@ void RequestParser::parseRequestHeader(Request *request)
         }
     }
     
+}
+
+UriComponents RequestParser::parseUri(const std::string& target) {
+    UriComponents result;
+    
+    // ✅ 1️⃣ 쿼리 문자열 분리
+    size_t queryPos = target.find("?");
+    if (queryPos != std::string::npos) {
+        result.path = target.substr(0, queryPos);
+        result.query = target.substr(queryPos + 1);
+    } else {
+        result.path = target;
+    }
+
+    // ✅ 2️⃣ 파일명 및 확장자 추출
+    size_t lastSlash = result.path.find_last_of("/");
+    if (lastSlash != std::string::npos) {
+        result.filename = result.path.substr(lastSlash + 1);
+    }
+
+    size_t dotPos = result.filename.find_last_of(".");
+    if (dotPos != std::string::npos) {
+        result.extension = result.filename.substr(dotPos);
+    }
+
+    return result;
 }
