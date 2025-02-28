@@ -8,11 +8,7 @@ void RequestParser::parseRequestHeader(Request *request)
         return;
     }
 
-    // const std::string& originalRequest = request->getOriginalRequest();
-    const std::string& originalRequest = "PATCH /api/resource/1 HTTP/1.1\n"
-                                        "Host: api.example.com\n"
-                                        "Content-Type: application/json\n"
-                                        "Content-Length: 25\n";
+    const std::string& originalRequest = request->getOriginalRequest();
     if (originalRequest.empty()) {
         std::cerr << "Error: originalRequest is empty!" << std::endl;
         return;
@@ -87,7 +83,7 @@ void RequestParser::parseRequestHeader(Request *request)
         processHeader(request, currentHeader);
     }
 
-    request->test();
+    // request->test();
 }
 
 // 새로운 헤더 처리 함수
@@ -130,32 +126,36 @@ void RequestParser::processHeader(Request* request, const std::string& header) {
 UriComponents RequestParser::parseUri(const std::string& target) {
     UriComponents result;
 
-    // ✅ 1️⃣ 쿼리 문자열 분리
+    // 1 쿼리 문자열 분리
     size_t queryPos = target.find("?");
     if (queryPos != std::string::npos) {
-        result.path = target.substr(0, queryPos);  // 쿼리 문자열 제외한 경로
+        result.path = target.substr(0, queryPos);  // `?` 앞부분만 경로로 저장
         result.query = target.substr(queryPos + 1); // `?` 이후 문자열을 쿼리로 저장
     } else {
         result.path = target;
     }
 
-    // ✅ 2️⃣ 파일명 및 경로 추출
+    // 2️ 마지막 슬래시(`/`) 기준으로 파일명과 경로 분리
     size_t lastSlash = result.path.find_last_of("/");
     if (lastSlash != std::string::npos) {
         std::string lastSegment = result.path.substr(lastSlash + 1);  // `/` 뒤의 문자열
         size_t dotPos = lastSegment.find_last_of(".");
 
-        if (dotPos != std::string::npos) {
-            // ✅ 파일명과 확장자가 있는 경우 → 마지막 `/` 전까지가 경로
+        if (!lastSegment.empty() && std::all_of(lastSegment.begin(), lastSegment.end(), ::isdigit)) {
+            // 숫자로만 이루어진 경우 → 리소스 ID로 판단하여 파일명으로 처리
+            result.filename = lastSegment;
+            result.path = result.path.substr(0, lastSlash);  // 경로에서 파일명 부분 제거
+        } else if (dotPos != std::string::npos) {
+            // 확장자가 포함된 파일명 처리
             result.filename = lastSegment;
             result.extension = lastSegment.substr(dotPos);
-            result.path = result.path.substr(0, lastSlash);  // 파일명을 제외한 경로 저장
+            result.path = result.path.substr(0, lastSlash);
         } else {
-            // ✅ 파일명이 아닌 경우 (예: `/api/resource/1`)
-            result.filename = "";  // 파일명이 없으므로 빈 문자열
-            result.path = target;  // 전체를 경로로 유지
+            // 일반적인 경로 (파일명이 아닌 경우)
+            result.filename = "";
         }
     }
 
     return result;
 }
+
