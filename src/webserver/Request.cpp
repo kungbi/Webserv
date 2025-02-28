@@ -1,6 +1,14 @@
 #include "Request.hpp"
 
-Request::Request(int fd) : fd_(fd), complete_(false) {}
+Request::Request(int fd) 
+	: fd_(fd)
+	, complete_(false)
+	, requestType_(GET)  // 기본값 설정
+	, port_(0)
+	, contentLength_(0)
+{
+	// 문자열 멤버들은 자동으로 빈 문자열로 초기화됨
+}
 
 bool Request::isComplete() const {
 	return complete_;
@@ -36,8 +44,8 @@ std::string Request::getProtocolVersion() const {
 	return protocolVersion_;
 }
 
-std::string Request::getHostName() const {
-	return hostName_;
+std::string Request::getHost() const {
+	return host_;
 }
 
 int Request::getPort() const {
@@ -70,6 +78,10 @@ std::string Request::getFilename() const {
 
 std::string Request::getExtension() const {
 	return extension_;
+}
+
+std::string Request::getPath() const {
+	return path_;
 }
 
 
@@ -106,9 +118,9 @@ void Request::setConnection(const std::string& connection)
 	connection_ = connection;
 }
 
-void Request::setHostName(const std::string& hostName)
+void Request::setHost(const std::string& host)
 {
-	hostName_ = hostName;
+	host_ = host;
 }
 
 void Request::setAccept(const std::string& accept)
@@ -132,22 +144,31 @@ void Request::setExtension(const std::string& extension) {
 	extension_ = extension;
 }
 
-// void Request::test()
-// {
-// 	std::cout << "Type : ";
-// 	switch (requestType_) {
-// 		case GET:    std::cout << "GET"; break;
-// 		case POST:   std::cout << "POST"; break;
-// 		case PUT:    std::cout << "PUT"; break;
-// 		case PATCH:  std::cout << "PATCH"; break;
-// 		case DELETE: std::cout << "DELETE"; break;
-// 	}
-// 	std::cout << std::endl;
-// 	std::cout<<"protocolVersion : "<< protocolVersion_ << std::endl;
-// 	std::cout<<"hostName_ : "<< hostName_ << std::endl;
-// 	std::cout<<"portNumber : "<< port_ << std::endl;
-// 	std::cout<<"target : "<< target_ << std::endl;
-// 	std::cout<<"connection : " << connection_ << std::endl;
-// 	std::cout<<"accept : " << accept_ << std::endl;
-// 	std::cout<<"content-length : " << contentLength_<<std::endl;
-// }
+void Request::setPath(const std::string& path) {
+	path_ = path;
+}
+
+void Request::test()
+{
+	std::cout << "Type : ";
+	switch (requestType_) {
+		case GET:    std::cout << "GET"; break;
+		case POST:   std::cout << "POST"; break;
+		case PUT:    std::cout << "PUT"; break;
+		case PATCH:  std::cout << "PATCH"; break;
+		case DELETE: std::cout << "DELETE"; break;
+	}
+	std::cout << std::endl;
+	std::cout<<"protocolVersion : "<< protocolVersion_ << std::endl;
+	std::cout<<"host_ : "<< host_ << std::endl;
+	std::cout<<"target :"<< target_ << std::endl;
+	std::cout<<"query : " << query_ << std::endl;
+	std::cout<<"path : " << path_ << std::endl;
+	std::cout<<"fileName : " << fileName_ << std::endl;
+	std::cout<<"extension : " << extension_ << std::endl;
+	std::cout<<"portNumber : "<< port_ << std::endl;
+	std::cout<<"target : "<< target_ << std::endl;
+	std::cout<<"connection : " << connection_ << std::endl;
+	std::cout<<"accept : " << accept_ << std::endl;
+	std::cout<<"content-length : " << contentLength_<<std::endl;
+}

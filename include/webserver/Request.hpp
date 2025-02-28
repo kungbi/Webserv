@@ -24,11 +24,12 @@ private:
 	// 파싱된 내용들 추가
 	RequestType requestType_;
 	std::string protocolVersion_;
-	std::string hostName_;
+	std::string host_;
 	std::string target_;
 	std::string query_;
 	std::string fileName_;
 	std::string extension_;
+	std::string path_; 
 
 	int port_;
 	std::string connection_;
@@ -41,7 +42,7 @@ private:
 
 public:
 	Request(int fd);
-	// void test();
+	void test();
 
 	bool isComplete() const;
 	void appendData(const char* data, size_t length);
@@ -52,7 +53,7 @@ public:
 	const std::string& getOriginalRequest() const;
 	RequestType getRequestType() const;
 	std::string getProtocolVersion() const;
-	std::string getHostName() const;
+	std::string getHost() const;
 	std::string getTarget() const;
 	int getPort() const;
 	std::string getConnection() const;
@@ -61,18 +62,20 @@ public:
 	std::string getQuery() const;
 	std::string getFilename() const;
 	std::string getExtension() const;
+	std::string getPath() const;
 
 	void setRequestType(const std::string& type);
 	void setTarget(const std::string& target);
 	void setPort(const int port);
 	void setProtocolVersion(const std::string& version);
-	void setHostName(const std::string& host);
+	void setHost(const std::string& host);
 	void setConnection(const std::string& connection);
 	void setContentLength(size_t length);
 	void setAccept(const std::string& accept);
 	void setQuery(const std::string& query);
 	void setFilename(const std::string& filename);
 	void setExtension(const std::string& extension);
+	void setPath(const std::string& path);
 };
 
 #endif

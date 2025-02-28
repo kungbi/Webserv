@@ -16,6 +16,7 @@ class RequestParser {
     public:
         void parseRequestHeader(Request* request);
         static UriComponents parseUri(const std::string& target);
+        void processHeader(Request* request, const std::string& header);
 };
 
 #endif
